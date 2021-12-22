@@ -3,10 +3,12 @@ package core
 class Board {
 
     companion object {
-        const val BOARD_SIZE = 8
+        const val SIZE = 8
+        const val LAST_INDEX = SIZE - 1
+        val INDICES = 0..LAST_INDEX
     }
 
-    val board = hashMapOf(
+    private val _board = hashMapOf(
         // Ладьи
         0 to 0 to Piece(PieceType.ROOK, false),
         0 to 7 to Piece(PieceType.ROOK, false),
@@ -36,4 +38,12 @@ class Board {
             i to j to Piece(PieceType.PAWN, !isBlack)
         }
     )
+
+    val board: Map<Indexes, Piece> by ::_board
+
+    val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(SIZE).apply {
+        for (i in INDICES) {
+            put(i, 'a' + i)
+        }
+    }
 }
