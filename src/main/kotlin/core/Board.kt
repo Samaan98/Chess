@@ -1,7 +1,9 @@
+package core
+
 class Board {
 
     companion object {
-        private const val BOARD_SIZE = 8
+        const val BOARD_SIZE = 8
     }
 
     val board = hashMapOf(
@@ -25,6 +27,13 @@ class Board {
         7 to 3 to Piece(PieceType.QUEEN, true),
         // Короли
         0 to 4 to Piece(PieceType.KING, false),
-        7 to 4 to Piece(PieceType.KING, true)
+        7 to 4 to Piece(PieceType.KING, true),
+        // Пешки
+        *Array(16) {
+            val isBlack = it < 8
+            val i = if (isBlack) 1 else 6
+            val j = if (isBlack) it else it - 8
+            i to j to Piece(PieceType.PAWN, !isBlack)
+        }
     )
 }

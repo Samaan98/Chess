@@ -1,3 +1,5 @@
+package core
+
 enum class PieceType {
     PAWN, // пешка
     ROOK, // ладья
