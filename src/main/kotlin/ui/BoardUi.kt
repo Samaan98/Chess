@@ -38,7 +38,7 @@ class BoardUi(private val board: Board) {
                         append(indexesToIndexesUi[i])
                         append(HORIZONTAL_DIVIDER)
                     }
-                    append(board.board[i to j]?.symbol ?: EMPTY_CELL_SYMBOL)
+                    append(board[i to j]?.symbol ?: EMPTY_CELL_SYMBOL)
                     if (j != Board.LAST_INDEX) append(HORIZONTAL_DIVIDER)
                 }
                 append("\n")

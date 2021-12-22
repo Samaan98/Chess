@@ -6,6 +6,9 @@ class Board {
         const val SIZE = 8
         const val LAST_INDEX = SIZE - 1
         val INDICES = 0..LAST_INDEX
+
+        val PAWNS_BLACK_INITIAL_ROW_INDEX = 1
+        val PAWNS_WHITE_INITIAL_ROW_INDEX = 6
     }
 
     private val _board = hashMapOf(
@@ -33,11 +36,15 @@ class Board {
         // Пешки
         *Array(16) {
             val isBlack = it < 8
-            val i = if (isBlack) 1 else 6
+            val i = if (isBlack) PAWNS_BLACK_INITIAL_ROW_INDEX else PAWNS_WHITE_INITIAL_ROW_INDEX
             val j = if (isBlack) it else it - 8
             i to j to Piece(PieceType.PAWN, !isBlack)
         }
     )
 
     val board: Map<Indexes, Piece> by ::_board
+
+    operator fun get(indexes: Indexes): Piece? = board[indexes]
+
+    fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 }
