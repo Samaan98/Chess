@@ -1,37 +1,49 @@
 package ui
 
 import core.Board
+import core.swapKeysAndValues
 
 class BoardUi(private val board: Board) {
 
     companion object {
         private const val HORIZONTAL_DIVIDER = " "
+        private const val EMPTY_CELL_SYMBOL = "."
     }
 
-    private val letters = Board.INDICES.map {
-        board.indexesToLetters[it]
-    }.joinToString(HORIZONTAL_DIVIDER, prefix = "  ")
-
-    val lettersToIndexes: Map<Char, Int> = HashMap<Char, Int>(Board.SIZE).apply {
+    private val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
         for (i in Board.INDICES) {
-            put('a' + i, i)
+            put(i, 'a' + i)
         }
     }
+
+    private val lettersToIndexes: Map<Char, Int> = indexesToLetters.swapKeysAndValues()
+
+    private val lettersLegend = Board.INDICES
+        .map { indexesToLetters[it] }
+        .joinToString(HORIZONTAL_DIVIDER, prefix = "  ")
+
+    private val indexesToIndexesUi: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
+        for (i in Board.INDICES) {
+            put(i, (Board.SIZE - i).toString().first())
+        }
+    }
+
+    private val indexesUiToIndexes: Map<Char, Int> = indexesToIndexesUi.swapKeysAndValues()
 
     fun printBoard() {
         buildString {
             for (i in Board.INDICES) {
                 for (j in Board.INDICES) {
                     if (j == 0) {
-                        append(Board.SIZE - i)
+                        append(indexesToIndexesUi[i])
                         append(HORIZONTAL_DIVIDER)
                     }
-                    append(board.board[i to j]?.symbol ?: '.')
+                    append(board.board[i to j]?.symbol ?: EMPTY_CELL_SYMBOL)
                     if (j != Board.LAST_INDEX) append(HORIZONTAL_DIVIDER)
                 }
-                append('\n')
+                append("\n")
                 if (i == Board.LAST_INDEX) {
-                    append(letters)
+                    append(lettersLegend)
                 }
             }
         }.also {

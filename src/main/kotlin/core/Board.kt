@@ -40,10 +40,4 @@ class Board {
     )
 
     val board: Map<Indexes, Piece> by ::_board
-
-    val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(SIZE).apply {
-        for (i in INDICES) {
-            put(i, 'a' + i)
-        }
-    }
 }
