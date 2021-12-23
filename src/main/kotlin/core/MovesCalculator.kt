@@ -7,7 +7,7 @@ class MovesCalculator(private val board: Board) {
         return when (piece.type) {
             PieceType.PAWN -> calculateMoves(position, piece, ::forPawn)
             PieceType.ROOK -> calculateMoves(position, piece, ::forRook)
-            PieceType.KNIGHT -> TODO()
+            PieceType.KNIGHT -> calculateMoves(position, piece, ::forKnight)
             PieceType.BISHOP -> calculateMoves(position, piece, ::forBishop)
             PieceType.QUEEN -> TODO()
             PieceType.KING -> TODO()
@@ -35,17 +35,9 @@ class MovesCalculator(private val board: Board) {
         val nextCaptureLeft = nextI to j - 1
         val nextCaptureRight = nextI to j + 1
         arrayOf(nextCaptureLeft, nextCaptureRight).forEach {
-            addMoveIfPawnCanCapture(piece, it, moves)
-        }
-    }
-
-    private fun addMoveIfPawnCanCapture(
-        piece: Piece,
-        nextPosition: Indexes,
-        moves: MutableSet<Indexes>
-    ) {
-        if (nextPosition.isInBounds && board.isEnemy(nextPosition, piece.isWhite)) {
-            moves.add(nextPosition)
+            if (it.isInBounds && board.isEnemy(it, piece.isWhite)) {
+                moves.add(it)
+            }
         }
     }
 
@@ -76,6 +68,41 @@ class MovesCalculator(private val board: Board) {
             canMoveDown = addMoveIfCanMove(piece, nextDown, moves)
 
             nextCellIndex++
+        }
+    }
+
+    private fun forKnight(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
+        val iOneUp = i - 1
+        val iOneDown = i + 1
+        val iTwoUp = i - 2
+        val iTwoDown = i + 2
+        val jOneLeft = j - 1
+        val jOneRight = j + 1
+        val jTwoLeft = j - 2
+        val jTwoRight = j + 2
+
+        val oneUpTwoLeft = iOneUp to jTwoLeft
+        val twoUpOneLeft = iTwoUp to jOneLeft
+        val twoUpOneRight = iTwoUp to jOneRight
+        val oneUpTwoRight = iOneUp to jTwoRight
+        val oneDownTwoRight = iOneDown to jTwoRight
+        val twoDownOneRight = iTwoDown to jOneRight
+        val twoDownOneLeft = iTwoDown to jOneLeft
+        val oneDownTwoLeft = iOneDown to jTwoLeft
+
+        arrayOf(
+            oneUpTwoLeft,
+            twoUpOneLeft,
+            twoUpOneRight,
+            oneUpTwoRight,
+            oneDownTwoRight,
+            twoDownOneRight,
+            twoDownOneLeft,
+            oneDownTwoLeft
+        ).forEach {
+            if (it.isInBounds && (board.isCellEmpty(it) || board.isEnemy(it, piece.isWhite))) {
+                moves.add(it)
+            }
         }
     }
 
