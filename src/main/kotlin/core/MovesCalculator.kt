@@ -17,10 +17,12 @@ class MovesCalculator(private val board: Board) {
     //todo взятие на проходе
     //todo достижение края доски и замена фигуры
     private fun forPawn(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
-        val next = i + piece.blackOrWhite(1, -1) to j
+        val nextIBlackOrWhite = piece.blackOrWhite(1, -1)
+        val nextI = i + nextIBlackOrWhite
+        val next = nextI to j
         if (board.isCellEmpty(next)) {
             moves.add(next)
-            val afterNext = i + piece.blackOrWhite(2, -2) to j
+            val afterNext = nextI + nextIBlackOrWhite to j
             val isInInitialPosition = i == piece.blackOrWhite(
                 Board.PAWNS_BLACK_INITIAL_ROW_INDEX,
                 Board.PAWNS_WHITE_INITIAL_ROW_INDEX
@@ -30,7 +32,21 @@ class MovesCalculator(private val board: Board) {
             }
         }
 
-        //todo взятие (capture)
+        val nextCaptureLeft = nextI to j - 1
+        val nextCaptureRight = nextI to j + 1
+        arrayOf(nextCaptureLeft, nextCaptureRight).forEach {
+            addMoveIfPawnCanCapture(piece, it, moves)
+        }
+    }
+
+    private fun addMoveIfPawnCanCapture(
+        piece: Piece,
+        nextPosition: Indexes,
+        moves: MutableSet<Indexes>
+    ) {
+        if (nextPosition.isInBounds && board.isEnemy(nextPosition, piece.isWhite)) {
+            moves.add(nextPosition)
+        }
     }
 
     private fun forRook(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
