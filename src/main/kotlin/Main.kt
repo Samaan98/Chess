@@ -1,4 +1,5 @@
 import core.Board
+import core.Chess
 import core.CommandProcessor
 import core.MovesCalculator
 import ui.BoardUi
@@ -9,18 +10,22 @@ private val boardUi = BoardUi(board)
 private val movesCalculator = MovesCalculator(board)
 private val inputProcessor = InputProcessor(boardUi)
 private val commandProcessor = CommandProcessor(board, movesCalculator)
+private val chess = Chess(inputProcessor, commandProcessor)
 
 fun main() {
-    boardUi.printBoard()
+    while (true) {
+        boardUi.printBoard()
 
-    val input = readLine()!!
-    val command = inputProcessor.parse(input)
-    commandProcessor.process(command)
-
-    boardUi.printBoard()
+        processMove()
+    }
 }
 
-private fun testMovesCalculator() {
-    val position = 1 to 4
-    println(movesCalculator.calculateMoves(position))
+private fun processMove() {
+    runCatching {
+        val input = readLine()!!
+        chess.makeMove(input)
+    }.onFailure {
+        println(it.message)
+        processMove()
+    }
 }
