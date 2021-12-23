@@ -8,7 +8,7 @@ data class Piece(
         return if (isWhite) white else black
     }
 
-    fun <T> doForBlackOrWhite(black: () -> T, white: () -> T): T {
-        return blackOrWhite(black, white).invoke()
+    inline fun <T> doForBlackOrWhite(black: () -> T, white: () -> T): T {
+        return if (isWhite) white.invoke() else black.invoke()
     }
 }

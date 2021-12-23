@@ -8,7 +8,7 @@ class MovesCalculator(private val board: Board) {
             PieceType.PAWN -> calculateMoves(position, piece, ::forPawn)
             PieceType.ROOK -> calculateMoves(position, piece, ::forRook)
             PieceType.KNIGHT -> TODO()
-            PieceType.BISHOP -> TODO()
+            PieceType.BISHOP -> calculateMoves(position, piece, ::forBishop)
             PieceType.QUEEN -> TODO()
             PieceType.KING -> TODO()
         }
@@ -57,15 +57,58 @@ class MovesCalculator(private val board: Board) {
         var nextCellIndex = 1
 
         while (canMoveLeft || canMoveUp || canMoveRight || canMoveDown) {
-            val nextLeft = if (canMoveLeft) i to (j - nextCellIndex) else null
-            val nextUp = if (canMoveUp) (i - nextCellIndex) to j else null
-            val nextRight = if (canMoveRight) i to (j + nextCellIndex) else null
-            val nextDown = if (canMoveDown) (i + nextCellIndex) to j else null
+            val nextLeft = nextMoveIfCanMoveOrNull(canMoveLeft) {
+                i to (j - nextCellIndex)
+            }
+            val nextUp = nextMoveIfCanMoveOrNull(canMoveUp) {
+                (i - nextCellIndex) to j
+            }
+            val nextRight = nextMoveIfCanMoveOrNull(canMoveRight) {
+                i to (j + nextCellIndex)
+            }
+            val nextDown = nextMoveIfCanMoveOrNull(canMoveDown) {
+                (i + nextCellIndex) to j
+            }
 
             canMoveLeft = addMoveIfCanMove(piece, nextLeft, moves)
             canMoveUp = addMoveIfCanMove(piece, nextUp, moves)
             canMoveRight = addMoveIfCanMove(piece, nextRight, moves)
             canMoveDown = addMoveIfCanMove(piece, nextDown, moves)
+
+            nextCellIndex++
+        }
+    }
+
+    private fun forBishop(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
+        var canMoveUpLeft = true
+        var canMoveDownLeft = true
+        var canMoveUpRight = true
+        var canMoveDownRight = true
+        var nextCellIndex = 1
+
+        while (canMoveUpLeft || canMoveDownLeft || canMoveUpRight || canMoveDownRight) {
+            val nextIUp = i - nextCellIndex
+            val nextIDown = i + nextCellIndex
+            val nextJLeft = j - nextCellIndex
+            val nextJRight = j + nextCellIndex
+
+            val nextUpLeft = nextMoveIfCanMoveOrNull(canMoveUpLeft) {
+                nextIUp to nextJLeft
+            }
+            val nextDownLeft = nextMoveIfCanMoveOrNull(canMoveDownLeft) {
+                nextIDown to nextJLeft
+            }
+            val nextUpRight = nextMoveIfCanMoveOrNull(canMoveUpRight) {
+                nextIUp to nextJRight
+            }
+            val nextDownRight = nextMoveIfCanMoveOrNull(canMoveDownRight) {
+                nextIDown to nextJRight
+            }
+
+            canMoveUpLeft = addMoveIfCanMove(piece, nextUpLeft, moves)
+            canMoveDownLeft = addMoveIfCanMove(piece, nextDownLeft, moves)
+            canMoveUpRight = addMoveIfCanMove(piece, nextUpRight, moves)
+            canMoveDownRight = addMoveIfCanMove(piece, nextDownRight, moves)
 
             nextCellIndex++
         }
@@ -99,5 +142,9 @@ class MovesCalculator(private val board: Board) {
             moves.add(nextPosition)
             !isEnemy
         } else false
+    }
+
+    private inline fun nextMoveIfCanMoveOrNull(canMove: Boolean, nextMove: () -> Indexes): Indexes? {
+        return if (canMove) nextMove() else null
     }
 }

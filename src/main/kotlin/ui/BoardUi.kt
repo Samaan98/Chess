@@ -7,7 +7,7 @@ class BoardUi(private val board: Board) {
 
     companion object {
         private const val HORIZONTAL_DIVIDER = " "
-        private const val EMPTY_CELL_SYMBOL = "."
+        private const val EMPTY_CELL_SYMBOL = "." // •
     }
 
     val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
