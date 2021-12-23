@@ -1,7 +1,4 @@
-import core.Board
-import core.Chess
-import core.CommandProcessor
-import core.MovesCalculator
+import core.*
 import ui.BoardUi
 import ui.InputProcessor
 
@@ -13,19 +10,40 @@ private val commandProcessor = CommandProcessor(board, movesCalculator)
 private val chess = Chess(inputProcessor, commandProcessor)
 
 fun main() {
-    while (true) {
-        boardUi.printBoard()
+    startGame()
+}
 
-        processMove()
+private fun startGame() {
+    var lastCommandResult: CommandResult? = null
+
+    while (true) {
+        if (lastCommandResult !is CommandResult.AvailableMoves) {
+            boardUi.printBoard()
+        }
+
+        lastCommandResult = processMove()
+
+        when (lastCommandResult) {
+            is CommandResult.AvailableMoves -> {
+                println(
+                    inputProcessor.indexesToIndexesUi(lastCommandResult.data)
+                        .takeIf { it.isNotEmpty() }
+                        ?: "Нет доступных ходов"
+                )
+            }
+            else -> {
+                // do nothing
+            }
+        }
     }
 }
 
-private fun processMove() {
-    runCatching {
+private fun processMove(): CommandResult? {
+    return runCatching {
         val input = readLine()!!
         chess.makeMove(input)
     }.onFailure {
         println(it.message)
         processMove()
-    }
+    }.getOrNull()
 }

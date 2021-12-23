@@ -22,20 +22,20 @@ class BoardUi(private val board: Board) {
         .map { indexesToLetters[it] }
         .joinToString(HORIZONTAL_DIVIDER, prefix = "  ")
 
-    val indexesToIndexesUi: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
+    val indexesToNumbers: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
         for (i in Board.INDICES) {
             put(i, (Board.SIZE - i).toString().first())
         }
     }
 
-    val indexesUiToIndexes: Map<Char, Int> = indexesToIndexesUi.swapKeysAndValues()
+    val numbersToIndexes: Map<Char, Int> = indexesToNumbers.swapKeysAndValues()
 
     fun printBoard() {
         buildString {
             for (i in Board.INDICES) {
                 for (j in Board.INDICES) {
                     if (j == 0) {
-                        append(indexesToIndexesUi[i])
+                        append(indexesToNumbers[i])
                         append(HORIZONTAL_DIVIDER)
                     }
                     append(board[i to j]?.symbol ?: EMPTY_CELL_SYMBOL)

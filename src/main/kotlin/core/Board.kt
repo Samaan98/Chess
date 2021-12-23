@@ -49,6 +49,10 @@ class Board {
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 
+    fun isEnemy(indexes: Indexes, isWhite: Boolean): Boolean = this[indexes]?.let {
+        it.isWhite != isWhite
+    } ?: false
+
     fun move(moveCommand: Command.Move) {
         val piece = _board[moveCommand.from] ?: error("Нет фигуры на данной клетке")
         _board.remove(moveCommand.from)
