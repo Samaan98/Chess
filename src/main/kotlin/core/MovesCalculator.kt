@@ -14,6 +14,7 @@ class MovesCalculator(private val board: Board) {
     }
 
     //todo взятие на проходе
+    //todo достижение края доски и замена фигуры
     private fun calculateMovesForPawn(position: Indexes, piece: Piece): Set<Indexes> {
         val moves = hashSetOf<Indexes>()
         val i = position.i
@@ -32,7 +33,7 @@ class MovesCalculator(private val board: Board) {
             }
         }
 
-        //todo взятие
+        //todo взятие (capture)
 
         return moves
     }

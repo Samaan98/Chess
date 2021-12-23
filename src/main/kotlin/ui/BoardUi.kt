@@ -10,25 +10,25 @@ class BoardUi(private val board: Board) {
         private const val EMPTY_CELL_SYMBOL = "."
     }
 
-    private val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
+    val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
         for (i in Board.INDICES) {
             put(i, 'a' + i)
         }
     }
 
-    private val lettersToIndexes: Map<Char, Int> = indexesToLetters.swapKeysAndValues()
+    val lettersToIndexes: Map<Char, Int> = indexesToLetters.swapKeysAndValues()
 
     private val lettersLegend = Board.INDICES
         .map { indexesToLetters[it] }
         .joinToString(HORIZONTAL_DIVIDER, prefix = "  ")
 
-    private val indexesToIndexesUi: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
+    val indexesToIndexesUi: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
         for (i in Board.INDICES) {
             put(i, (Board.SIZE - i).toString().first())
         }
     }
 
-    private val indexesUiToIndexes: Map<Char, Int> = indexesToIndexesUi.swapKeysAndValues()
+    val indexesUiToIndexes: Map<Char, Int> = indexesToIndexesUi.swapKeysAndValues()
 
     fun printBoard() {
         buildString {
