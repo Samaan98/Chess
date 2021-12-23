@@ -9,7 +9,7 @@ class Chess(
 
     private var isWhiteMove = true
 
-    fun makeMove(input: String): CommandResult? {
+    fun makeMove(input: String): CommandResult {
 
         val command = inputProcessor.parse(input)
         val result = commandProcessor.process(command, isWhiteMove)

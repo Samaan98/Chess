@@ -5,14 +5,14 @@ class CommandProcessor(
     private val movesCalculator: MovesCalculator
 ) {
 
-    fun process(command: Command, isWhiteMove: Boolean): CommandResult? {
+    fun process(command: Command, isWhiteMove: Boolean): CommandResult {
         return when (command) {
             is Command.Move -> processMoveCommand(command, isWhiteMove)
             is Command.GetAvailableMoves -> processGetAvailableMovesCommand(command, isWhiteMove)
         }
     }
 
-    private fun processMoveCommand(moveCommand: Command.Move, isWhiteMove: Boolean): CommandResult? {
+    private fun processMoveCommand(moveCommand: Command.Move, isWhiteMove: Boolean): CommandResult {
         val from = moveCommand.from
         from.ensureMyTurn(isWhiteMove)
 
@@ -21,7 +21,7 @@ class CommandProcessor(
             board.move(moveCommand)
         } else error("Невозможный ход")
 
-        return null
+        return CommandResult.Success
     }
 
     private fun processGetAvailableMovesCommand(
