@@ -5,8 +5,8 @@ class MovesCalculator(private val board: Board) {
     fun calculateMoves(position: Indexes): Set<Indexes> {
         val piece = board[position] ?: error("Нет фигуры на данной клетке")
         return when (piece.type) {
-            PieceType.PAWN -> calculateMovesForPawn(position, piece)
-            PieceType.ROOK -> calculateMovesForRook(position, piece)
+            PieceType.PAWN -> calculateMoves(position, piece, ::forPawn)
+            PieceType.ROOK -> calculateMoves(position, piece, ::forRook)
             PieceType.KNIGHT -> TODO()
             PieceType.BISHOP -> TODO()
             PieceType.QUEEN -> TODO()
@@ -16,11 +16,7 @@ class MovesCalculator(private val board: Board) {
 
     //todo взятие на проходе
     //todo достижение края доски и замена фигуры
-    private fun calculateMovesForPawn(position: Indexes, piece: Piece): Set<Indexes> {
-        val moves = hashSetOf<Indexes>()
-        val i = position.i
-        val j = position.j
-
+    private fun forPawn(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
         val next = i + piece.blackOrWhite(1, -1) to j
         if (board.isCellEmpty(next)) {
             moves.add(next)
@@ -35,18 +31,9 @@ class MovesCalculator(private val board: Board) {
         }
 
         //todo взятие (capture)
-
-        return moves
     }
 
-    private fun calculateMovesForRook(
-        position: Indexes,
-        piece: Piece
-    ): Set<Indexes> {
-        val moves = hashSetOf<Indexes>()
-        val i = position.i
-        val j = position.j
-
+    private fun forRook(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
         var canMoveLeft = true
         var canMoveUp = true
         var canMoveRight = true
@@ -66,6 +53,18 @@ class MovesCalculator(private val board: Board) {
 
             nextCellIndex++
         }
+    }
+
+    private fun calculateMoves(
+        position: Indexes,
+        piece: Piece,
+        forPiece: (piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) -> Unit
+    ): Set<Indexes> {
+        val moves = hashSetOf<Indexes>()
+        val i = position.i
+        val j = position.j
+
+        forPiece(piece, i, j, moves)
 
         return moves
     }
