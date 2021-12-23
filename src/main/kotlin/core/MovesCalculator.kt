@@ -2,7 +2,8 @@ package core
 
 class MovesCalculator(private val board: Board) {
 
-    fun calculateMoves(position: Indexes, piece: Piece): Set<Indexes> {
+    fun calculateMoves(position: Indexes): Set<Indexes> {
+        val piece = board[position] ?: error("Нет фигуры на данной клетке")
         return when (piece.type) {
             PieceType.PAWN -> calculateMovesForPawn(position, piece)
             PieceType.ROOK -> TODO()

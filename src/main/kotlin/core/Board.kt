@@ -7,10 +7,11 @@ class Board {
         const val LAST_INDEX = SIZE - 1
         val INDICES = 0..LAST_INDEX
 
-        val PAWNS_BLACK_INITIAL_ROW_INDEX = 1
-        val PAWNS_WHITE_INITIAL_ROW_INDEX = 6
+        const val PAWNS_BLACK_INITIAL_ROW_INDEX = 1
+        const val PAWNS_WHITE_INITIAL_ROW_INDEX = 6
     }
 
+    // todo инициализация в цикле
     private val _board = hashMapOf(
         // Ладьи
         0 to 0 to Piece(PieceType.ROOK, false),
@@ -47,4 +48,10 @@ class Board {
     operator fun get(indexes: Indexes): Piece? = board[indexes]
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
+
+    fun move(moveCommand: Command.Move) {
+        val piece = _board[moveCommand.from] ?: error("Нет фигуры на данной клетке")
+        _board.remove(moveCommand.from)
+        _board[moveCommand.to] = piece
+    }
 }
