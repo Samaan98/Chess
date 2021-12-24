@@ -9,8 +9,8 @@ class MovesCalculator(private val board: Board) {
             PieceType.ROOK -> calculateMoves(position, piece, ::forRook)
             PieceType.KNIGHT -> calculateMoves(position, piece, ::forKnight)
             PieceType.BISHOP -> calculateMoves(position, piece, ::forBishop)
-            PieceType.QUEEN -> TODO()
-            PieceType.KING -> TODO()
+            PieceType.QUEEN -> calculateMoves(position, piece, ::forQueen)
+            PieceType.KING -> calculateMoves(position, piece, ::forKing)
         }
     }
 
@@ -141,6 +141,29 @@ class MovesCalculator(private val board: Board) {
         }
     }
 
+    private fun forQueen(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
+        forRook(piece, i, j, moves)
+        forBishop(piece, i, j, moves)
+    }
+
+    //todo рокировка
+    private fun forKing(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) {
+        val iVariants = listOf(i - 1, i, i + 1)
+        val jVariants = listOf(j - 1, j, j + 1)
+
+        for (iVariant in iVariants) {
+            for (jVariant in jVariants) {
+                if (iVariant == i && jVariant == j) continue
+                val move = iVariant to jVariant
+                if (piece.canMoveOrCapture(move)) {
+                    moves.add(move)
+                }
+            }
+        }
+
+        //todo проверка, не оказывается ли под шахом после хода
+    }
+
     private fun calculateMoves(
         position: Indexes,
         piece: Piece,
@@ -164,11 +187,14 @@ class MovesCalculator(private val board: Board) {
         moves: MutableSet<Indexes>
     ): Boolean {
         if (nextPosition == null) return false
-        val isEnemy = board.isEnemy(nextPosition, piece.isWhite)
-        return if (nextPosition.isInBounds && (board.isCellEmpty(nextPosition) || isEnemy)) {
+        return if (piece.canMoveOrCapture(nextPosition)) {
             moves.add(nextPosition)
-            !isEnemy
+            !board.isEnemy(nextPosition, piece.isWhite)
         } else false
+    }
+
+    private fun Piece.canMoveOrCapture(position: Indexes): Boolean {
+        return position.isInBounds && (board.isCellEmpty(position) || board.isEnemy(position, isWhite))
     }
 
     private inline fun nextMoveIfCanMoveOrNull(canMove: Boolean, nextMove: () -> Indexes): Indexes? {
