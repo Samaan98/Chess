@@ -14,7 +14,7 @@ class CommandProcessor(
 
     private fun processMoveCommand(moveCommand: Command.Move, isWhiteMove: Boolean): CommandResult {
         val from = moveCommand.from
-        from.ensureMyTurn(isWhiteMove)
+        from.ensureNotOpponentMove(isWhiteMove)
 
         val availableMoves = movesCalculator.calculateMoves(from)
         if (moveCommand.to in availableMoves) {
@@ -29,17 +29,15 @@ class CommandProcessor(
         isWhiteMove: Boolean
     ): CommandResult {
         val from = getAvailableMovesCommand.from
-        from.ensureMyTurn(isWhiteMove)
+        from.ensureNotOpponentMove(isWhiteMove)
 
         return CommandResult.AvailableMoves(
             data = movesCalculator.calculateMoves(from)
         )
     }
 
-    private fun Indexes.ensureMyTurn(isWhiteMove: Boolean) {
+    private fun Indexes.ensureNotOpponentMove(isWhiteMove: Boolean) {
         val piece = board[this] ?: errorNoFigureAtCell(this)
-        require(piece.isWhite == isWhiteMove) {
-            "Сейчас ход ${if (isWhiteMove) "белых" else "черных"}"
-        }
+        if (piece.isWhite != isWhiteMove) errorOpponentMove(isWhiteMove)
     }
 }

@@ -48,9 +48,11 @@ private fun processMove(): CommandResult {
                 is ChessError.ImpossibleMove ->
                     "Невозможный ход на ${inputProcessor.indexesToIndexesUi(it.to)}"
                 is ChessError.InvalidCommand ->
-                    "Нераспознанная команда: \"${it.command}\""
+                    "Нераспознанная команда: '${it.command}'"
                 is ChessError.NoFigureAtCell ->
                     "Нет фигуры на ${inputProcessor.indexesToIndexesUi(it.position)}"
+                is ChessError.OpponentMove ->
+                    "Сейчас ход ${if (it.isWhiteMove) "белых" else "чёрных"}"
             }
         } else it.message
         println(message)
