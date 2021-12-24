@@ -1,29 +1,23 @@
 package ui
 
-import core.Command
-import core.Indexes
-import core.i
-import core.j
+import core.*
 
+//todo документация на доступные команды с примерами
 class InputProcessor(private val boardUi: BoardUi) {
-
-    companion object {
-        private const val INVALID_COMMAND_MESSAGE = "Нераспознанная команда"
-    }
 
     fun parse(input: String): Command {
         val commands = input.lowercase().split(" ")
         return when (commands.size) {
             2 -> parseMoveCommand(commands)
             1 -> parseGetAvailableMovesCommand(commands.first())
-            else -> error(INVALID_COMMAND_MESSAGE)
+            else -> errorInvalidCommand(input)
         }
     }
 
     fun indexesUiToIndexes(input: String): Indexes {
         return Indexes(
-            boardUi.numbersToIndexes[input[1]] ?: error(INVALID_COMMAND_MESSAGE),
-            boardUi.lettersToIndexes[input[0]] ?: error(INVALID_COMMAND_MESSAGE)
+            boardUi.numbersToIndexes[input[1]] ?: errorInvalidCommand(input),
+            boardUi.lettersToIndexes[input[0]] ?: errorInvalidCommand(input)
         )
     }
 

@@ -54,7 +54,7 @@ class Board {
     } ?: false
 
     fun move(moveCommand: Command.Move) {
-        val piece = _board[moveCommand.from] ?: error("Нет фигуры на данной клетке")
+        val piece = _board[moveCommand.from] ?: errorNoFigureAtCell(moveCommand.from)
         _board.remove(moveCommand.from)
         _board[moveCommand.to] = piece
     }

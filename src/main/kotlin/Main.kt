@@ -43,7 +43,17 @@ private fun processMove(): CommandResult {
         val input = readLine()!!
         chess.makeMove(input)
     }.onFailure {
-        println(it.message)
+        val message = if (it is ChessError) {
+            when (it) {
+                is ChessError.ImpossibleMove ->
+                    "Невозможный ход на ${inputProcessor.indexesToIndexesUi(it.to)}"
+                is ChessError.InvalidCommand ->
+                    "Нераспознанная команда: \"${it.command}\""
+                is ChessError.NoFigureAtCell ->
+                    "Нет фигуры на ${inputProcessor.indexesToIndexesUi(it.position)}"
+            }
+        } else it.message
+        println(message)
     }.getOrElse {
         processMove()
     }

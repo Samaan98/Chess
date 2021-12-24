@@ -19,7 +19,7 @@ class CommandProcessor(
         val availableMoves = movesCalculator.calculateMoves(from)
         if (moveCommand.to in availableMoves) {
             board.move(moveCommand)
-        } else error("Невозможный ход")
+        } else errorImpossibleMove(moveCommand.to)
 
         return CommandResult.Success
     }
@@ -37,7 +37,7 @@ class CommandProcessor(
     }
 
     private fun Indexes.ensureMyTurn(isWhiteMove: Boolean) {
-        val piece = board[this] ?: error("Нет фигуры на данной клетке")
+        val piece = board[this] ?: errorNoFigureAtCell(this)
         require(piece.isWhite == isWhiteMove) {
             "Сейчас ход ${if (isWhiteMove) "белых" else "черных"}"
         }
