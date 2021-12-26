@@ -2,6 +2,7 @@ package core
 
 import ui.InputProcessor
 
+//todo тесты на всю логику
 class Chess(
     private val inputProcessor: InputProcessor,
     private val commandProcessor: CommandProcessor

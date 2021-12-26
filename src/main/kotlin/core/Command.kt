@@ -12,5 +12,6 @@ sealed class Command {
 
 sealed class CommandResult {
     object Success : CommandResult()
+    object Check : CommandResult()
     data class AvailableMoves(val data: Set<Indexes>) : CommandResult()
 }

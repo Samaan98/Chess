@@ -1,9 +1,11 @@
 import core.*
+import ui.BoardText
 import ui.BoardUi
 import ui.InputProcessor
 
 private val board = Board()
-private val boardUi = BoardUi(board)
+private val boardUi = BoardUi()
+private val boardText = BoardText(board, boardUi)
 private val movesCalculator = MovesCalculator(board)
 private val inputProcessor = InputProcessor(boardUi)
 private val commandProcessor = CommandProcessor(board, movesCalculator)
@@ -18,7 +20,7 @@ private fun startGame() {
 
     while (true) {
         if (lastCommandResult !is CommandResult.AvailableMoves) {
-            boardUi.printBoard()
+            println(boardText.getBoard())
         }
 
         lastCommandResult = processMove()
@@ -33,6 +35,9 @@ private fun startGame() {
             }
             CommandResult.Success -> {
                 // do nothing
+            }
+            CommandResult.Check -> {
+                println("Шах")
             }
         }
     }

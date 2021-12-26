@@ -3,51 +3,21 @@ package ui
 import core.Board
 import core.swapKeysAndValues
 
-class BoardUi(private val board: Board) {
+class BoardUi {
 
-    companion object {
-        private const val HORIZONTAL_DIVIDER = " "
-        private const val EMPTY_CELL_SYMBOL = "." // •
-    }
+    val indexesToLetters = initIntToCharBoardSizeMap { 'a' + it }
 
-    val indexesToLetters: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
-        for (i in Board.INDICES) {
-            put(i, 'a' + i)
-        }
-    }
+    val lettersToIndexes = indexesToLetters.swapKeysAndValues()
 
-    val lettersToIndexes: Map<Char, Int> = indexesToLetters.swapKeysAndValues()
-
-    private val lettersLegend = Board.INDICES
-        .map { indexesToLetters[it] }
-        .joinToString(HORIZONTAL_DIVIDER, prefix = "  ")
-
-    val indexesToNumbers: Map<Int, Char> = HashMap<Int, Char>(Board.SIZE).apply {
-        for (i in Board.INDICES) {
-            put(i, (Board.SIZE - i).toString().first())
-        }
-    }
+    val indexesToNumbers = initIntToCharBoardSizeMap { (Board.SIZE - it).toString().first() }
 
     val numbersToIndexes: Map<Char, Int> = indexesToNumbers.swapKeysAndValues()
 
-    fun printBoard() {
-        buildString {
+    private fun initIntToCharBoardSizeMap(initializer: (i: Int) -> Char): Map<Int, Char> {
+        return HashMap<Int, Char>(Board.SIZE).apply {
             for (i in Board.INDICES) {
-                for (j in Board.INDICES) {
-                    if (j == 0) {
-                        append(indexesToNumbers[i])
-                        append(HORIZONTAL_DIVIDER)
-                    }
-                    append(board[i to j]?.symbol ?: EMPTY_CELL_SYMBOL)
-                    if (j != Board.LAST_INDEX) append(HORIZONTAL_DIVIDER)
-                }
-                append("\n")
-                if (i == Board.LAST_INDEX) {
-                    append(lettersLegend)
-                }
+                put(i, initializer(i))
             }
-        }.also {
-            println(it)
         }
     }
 }

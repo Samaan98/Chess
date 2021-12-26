@@ -1,5 +1,6 @@
 package core
 
+//todo список съеденных фигур
 class Board {
 
     companion object {
@@ -54,8 +55,7 @@ class Board {
     } ?: false
 
     fun move(moveCommand: Command.Move) {
-        val piece = _board[moveCommand.from] ?: errorNoFigureAtCell(moveCommand.from)
-        _board.remove(moveCommand.from)
+        val piece = _board.remove(moveCommand.from) ?: errorNoFigureAtCell(moveCommand.from)
         _board[moveCommand.to] = piece
     }
 }

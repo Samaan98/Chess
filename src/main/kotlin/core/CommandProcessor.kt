@@ -17,11 +17,17 @@ class CommandProcessor(
         from.ensureNotOpponentMove(isWhiteMove)
 
         val availableMoves = movesCalculator.calculateMoves(from)
-        if (moveCommand.to in availableMoves) {
-            board.move(moveCommand)
-        } else errorImpossibleMove(moveCommand.to)
 
-        return CommandResult.Success
+        if (moveCommand.to !in availableMoves) errorImpossibleMove(moveCommand.to)
+
+        board.move(moveCommand)
+        val isCheckForEnemy = movesCalculator.isCheck(!isWhiteMove)
+
+        return if (isCheckForEnemy) {
+            CommandResult.Check
+        } else {
+            CommandResult.Success
+        }
     }
 
     private fun processGetAvailableMovesCommand(

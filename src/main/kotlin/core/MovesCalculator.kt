@@ -1,5 +1,6 @@
 package core
 
+//todo параллельные вычисления для сложных операций
 class MovesCalculator(private val board: Board) {
 
     fun calculateMoves(position: Indexes): Set<Indexes> {
@@ -11,6 +12,20 @@ class MovesCalculator(private val board: Board) {
             PieceType.BISHOP -> calculateMoves(position, piece, ::forBishop)
             PieceType.QUEEN -> calculateMoves(position, piece, ::forQueen)
             PieceType.KING -> calculateMoves(position, piece, ::forKing)
+        }
+    }
+
+    fun isCheck(isWhiteMove: Boolean): Boolean {
+        val kingPosition = board.board.entries.find {
+            it.value.isWhite == isWhiteMove && it.value.type == PieceType.KING
+        }?.key ?: error("No king on board")
+
+        return board.board.filterValues {
+            it.isWhite != isWhiteMove
+        }.keys.any {
+            calculateMoves(it).any { potentialCheckMove ->
+                potentialCheckMove == kingPosition
+            }
         }
     }
 
@@ -161,7 +176,8 @@ class MovesCalculator(private val board: Board) {
             }
         }
 
-        //todo проверка, не оказывается ли под шахом после хода
+        //todo проверка, не оказывается ли под шахом после хода.
+        // Причем проверка для любого хода!!!
     }
 
     private fun calculateMoves(
