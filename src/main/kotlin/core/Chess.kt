@@ -3,6 +3,14 @@ package core
 import ui.InputProcessor
 
 //todo тесты на всю логику
+// объявить ничью
+// пат
+// сдаться
+// ход назад
+// таймер
+// король может атаковать короля противника лишь при помощи «вскрытого» шаха
+// ПРОЧИТАТЬ ПРО ВСЕ КОРНЕРКЕЙСЫ, КОТОРЫХ ПРОСТО, СУКА, МИЛЛИОН
+// параллельные вычисления для сложных операций
 class Chess(
     private val inputProcessor: InputProcessor,
     private val commandProcessor: CommandProcessor

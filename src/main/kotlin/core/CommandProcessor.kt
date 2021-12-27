@@ -16,15 +16,22 @@ class CommandProcessor(
         val from = moveCommand.from
         from.ensureNotOpponentMove(isWhiteMove)
 
-        val availableMoves = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove)
+        val availableMoves = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
 
         if (moveCommand.to !in availableMoves) errorImpossibleMove(moveCommand.to)
 
         board.move(moveCommand.from, moveCommand.to)
-        val isCheckForEnemy = movesCalculator.isCheck(forWhite = !isWhiteMove)
+
+        val enemy = !isWhiteMove
+        val isCheckForEnemy = movesCalculator.isCheck(forWhite = enemy, board)
 
         return if (isCheckForEnemy) {
-            CommandResult.Check
+            val isCheckmateForEnemy = movesCalculator.isCheckmate(forWhite = enemy, board)
+            if (isCheckmateForEnemy) {
+                CommandResult.Checkmate
+            } else {
+                CommandResult.Check
+            }
         } else {
             CommandResult.Success
         }
@@ -38,7 +45,7 @@ class CommandProcessor(
         from.ensureNotOpponentMove(isWhiteMove)
 
         return CommandResult.AvailableMoves(
-            data = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove)
+            data = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
         )
     }
 

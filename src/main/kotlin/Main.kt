@@ -2,18 +2,25 @@ import core.*
 import ui.BoardText
 import ui.BoardUi
 import ui.InputProcessor
+import java.io.File
 
 private const val IS_DEBUG = false
 
 private val board = BoardFactory().createBoard()
 private val boardUi = BoardUi()
 private val boardText = BoardText(board, boardUi)
-private val movesCalculator = MovesCalculator(board)
+private val movesCalculator = MovesCalculator()
 private val inputProcessor = InputProcessor(boardUi)
 private val commandProcessor = CommandProcessor(board, movesCalculator)
 private val chess = Chess(inputProcessor, commandProcessor)
+private val inputCommands = File("info", "input_commands.txt").readLines()
 
 fun main() {
+    if (IS_DEBUG && inputCommands.isNotEmpty()) {
+        inputCommands.forEach {
+            chess.makeMove(it)
+        }
+    }
     startGame()
 }
 
@@ -24,6 +31,7 @@ private fun startGame() {
         if (lastCommandResult !is CommandResult.AvailableMoves) {
             println(boardText.getBoard())
         }
+        if (lastCommandResult == CommandResult.Checkmate) break
 
         lastCommandResult = processMove()
 
@@ -40,6 +48,9 @@ private fun startGame() {
             }
             CommandResult.Check -> {
                 println("Шах")
+            }
+            CommandResult.Checkmate -> {
+                println("Шах и мат!")
             }
         }
     }

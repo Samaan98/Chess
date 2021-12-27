@@ -32,8 +32,12 @@ data class Board(private val _board: MutableMap<Indexes, Piece>) {
         it.isWhite != isWhite
     } ?: false
 
-    fun getAllEnemyPieces(isWhiteMove: Boolean) = board.filterValues {
-        it.isWhite != isWhiteMove
+    fun getAllEnemyPieces(forWhite: Boolean) = board.filterValues {
+        it.isWhite != forWhite
+    }
+
+    fun getAllPieces(forWhite: Boolean) = board.filterValues {
+        it.isWhite == forWhite
     }
 
     fun move(from: Indexes, to: Indexes) {
