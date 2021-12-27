@@ -3,7 +3,7 @@ package core.board
 import core.piece.Piece
 import core.piece.PieceType
 
-class BoardFactory {
+internal class BoardFactory {
 
     // todo инициализация в цикле
     fun createBoard() = Board(

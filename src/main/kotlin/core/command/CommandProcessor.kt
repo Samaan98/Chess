@@ -7,7 +7,7 @@ import core.util.errorImpossibleMove
 import core.util.errorNoFigureAtCell
 import core.util.errorOpponentMove
 
-class CommandProcessor(
+internal class CommandProcessor(
     private val board: Board,
     private val movesCalculator: MovesCalculator
 ) {

@@ -6,7 +6,7 @@ import core.util.Indexes
 import core.util.errorNoFigureAtCell
 
 //todo список съеденных фигур
-class Board(private val _board: MutableMap<Indexes, Piece>) {
+class Board internal constructor(private val _board: MutableMap<Indexes, Piece>) {
 
     companion object {
         const val SIZE = 8

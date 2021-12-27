@@ -7,7 +7,7 @@ import core.util.i
 import core.util.isInBounds
 import core.util.j
 
-abstract class MovesCalculatorStrategy {
+internal abstract class MovesCalculatorStrategy {
 
     fun calculateMoves(position: Indexes, piece: Piece, board: Board): Set<Indexes> {
         val moves = mutableSetOf<Indexes>()

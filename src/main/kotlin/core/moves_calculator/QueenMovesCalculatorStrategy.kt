@@ -5,7 +5,7 @@ import core.piece.Piece
 import core.util.Indexes
 
 // Queen moves could be interpreted as combination of Rook and Bishop moves
-class QueenMovesCalculatorStrategy(
+internal class QueenMovesCalculatorStrategy(
     private val rookMovesCalculatorStrategy: RookMovesCalculatorStrategy,
     private val bishopMovesCalculatorStrategy: BishopMovesCalculatorStrategy
 ) : MovesCalculatorStrategy() {

@@ -5,7 +5,7 @@ import core.piece.Piece
 import core.util.Indexes
 
 //todo рокировка
-class KingMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class KingMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     override fun calculateMoves(
         piece: Piece,

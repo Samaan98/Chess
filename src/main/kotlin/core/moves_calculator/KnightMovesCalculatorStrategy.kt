@@ -5,7 +5,7 @@ import core.piece.Piece
 import core.util.Indexes
 import core.util.isInBounds
 
-class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     override fun calculateMoves(
         piece: Piece,

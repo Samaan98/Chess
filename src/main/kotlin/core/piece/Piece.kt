@@ -1,6 +1,6 @@
 package core.piece
 
-data class Piece(
+data class Piece internal constructor(
     val type: PieceType,
     val isWhite: Boolean
 ) {

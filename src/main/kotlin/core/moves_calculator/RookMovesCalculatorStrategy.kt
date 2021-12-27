@@ -4,7 +4,7 @@ import core.board.Board
 import core.piece.Piece
 import core.util.Indexes
 
-class RookMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class RookMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     fun calculateMovesForRook(
         piece: Piece,

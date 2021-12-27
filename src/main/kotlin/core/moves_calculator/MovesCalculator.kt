@@ -6,7 +6,7 @@ import core.util.Indexes
 import core.util.errorNoFigureAtCell
 import java.util.*
 
-class MovesCalculator {
+internal class MovesCalculator {
 
     private val movesCalculatorStrategy = EnumMap<PieceType, MovesCalculatorStrategy>(PieceType::class.java).apply {
         val rookMovesCalculatorStrategy = RookMovesCalculatorStrategy()

@@ -2,7 +2,7 @@ package core.command
 
 import core.util.Indexes
 
-sealed class Command {
+internal sealed class Command {
 
     data class Move(
         val from: Indexes,

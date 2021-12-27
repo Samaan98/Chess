@@ -4,7 +4,7 @@ import core.board.Board
 import core.piece.Piece
 import core.util.Indexes
 
-class BishopMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class BishopMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     fun calculateMovesForBishop(
         piece: Piece,

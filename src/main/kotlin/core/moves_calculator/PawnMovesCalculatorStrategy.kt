@@ -7,7 +7,7 @@ import core.util.isInBounds
 
 //todo взятие на проходе
 //todo достижение края доски и замена фигуры
-class PawnMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class PawnMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     override fun calculateMoves(
         piece: Piece,

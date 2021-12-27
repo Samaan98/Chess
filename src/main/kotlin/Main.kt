@@ -1,23 +1,14 @@
 import core.Chess
-import core.board.BoardFactory
-import core.command.CommandProcessor
 import core.command.CommandResult
-import core.moves_calculator.MovesCalculator
 import core.util.ChessError
 import ui.BoardText
-import ui.BoardUi
-import ui.InputProcessor
 import java.io.File
 
 private const val IS_DEBUG = false
 
-private val board = BoardFactory().createBoard()
-private val boardUi = BoardUi()
-private val boardText = BoardText(board, boardUi)
-private val movesCalculator = MovesCalculator()
-private val inputProcessor = InputProcessor(boardUi)
-private val commandProcessor = CommandProcessor(board, movesCalculator)
-private val chess = Chess(inputProcessor, commandProcessor)
+private val chess = Chess()
+private val boardUi = chess.boardUi
+private val boardText = BoardText(chess.board, boardUi)
 private val inputCommands = File("info", "input_commands.txt").readLines()
 
 fun main() {
@@ -43,7 +34,7 @@ private fun startGame() {
         when (lastCommandResult) {
             is CommandResult.AvailableMoves -> {
                 println(
-                    inputProcessor.indexesToIndexesUi(lastCommandResult.data)
+                    boardUi.indexesToIndexesUi(lastCommandResult.data)
                         .takeIf { it.isNotEmpty() }
                         ?: "Нет доступных ходов"
                 )
@@ -69,11 +60,11 @@ private fun processMove(): CommandResult {
         val message = if (it is ChessError) {
             when (it) {
                 is ChessError.ImpossibleMove ->
-                    "Невозможный ход на ${inputProcessor.indexesToIndexesUi(it.to)}"
+                    "Невозможный ход на ${boardUi.indexesToIndexesUi(it.to)}"
                 is ChessError.InvalidCommand ->
                     "Нераспознанная команда: '${it.command}'"
                 is ChessError.NoFigureAtCell ->
-                    "Нет фигуры на ${inputProcessor.indexesToIndexesUi(it.position)}"
+                    "Нет фигуры на ${boardUi.indexesToIndexesUi(it.position)}"
                 is ChessError.OpponentMove ->
                     "Сейчас ход ${if (it.isWhiteMove) "белых" else "чёрных"}"
             }
