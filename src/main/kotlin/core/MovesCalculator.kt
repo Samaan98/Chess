@@ -3,7 +3,35 @@ package core
 //todo параллельные вычисления для сложных операций
 class MovesCalculator(private val board: Board) {
 
-    fun calculateMoves(position: Indexes): Set<Indexes> {
+    /**
+     * Calculates available moves for a piece at [position].
+     * Such moves that lead to check are filtered.
+     * @return a set of available moves.
+     */
+    fun calculateMovesWithCheckMovesFiltered(position: Indexes, isWhiteMove: Boolean): Set<Indexes> {
+        return calculateMoves(position).filter { potentialMoveTo ->
+            board.copy().apply { // copy the board
+                move(position, potentialMoveTo) // move the piece on the copied board
+            }.let {
+                !isCheck(forWhite = isWhiteMove, board = it) // check if this move leads to check
+            }
+        }.toSet()
+    }
+
+    /**
+     * Detects if there's a check for [forWhite].
+     */
+    fun isCheck(forWhite: Boolean, board: Board = this.board): Boolean {
+        val kingPosition = board.kingsPositions[forWhite] ?: error("No king on board")
+
+        return board.getAllEnemyPieces(forWhite).keys.any {
+            calculateMoves(it).any { potentialCheckMove ->
+                potentialCheckMove == kingPosition
+            }
+        }
+    }
+
+    private fun calculateMoves(position: Indexes): Set<Indexes> {
         val piece = board[position] ?: errorNoFigureAtCell(position)
         return when (piece.type) {
             PieceType.PAWN -> calculateMoves(position, piece, ::forPawn)
@@ -12,20 +40,6 @@ class MovesCalculator(private val board: Board) {
             PieceType.BISHOP -> calculateMoves(position, piece, ::forBishop)
             PieceType.QUEEN -> calculateMoves(position, piece, ::forQueen)
             PieceType.KING -> calculateMoves(position, piece, ::forKing)
-        }
-    }
-
-    fun isCheck(isWhiteMove: Boolean): Boolean {
-        val kingPosition = board.board.entries.find {
-            it.value.isWhite == isWhiteMove && it.value.type == PieceType.KING
-        }?.key ?: error("No king on board")
-
-        return board.board.filterValues {
-            it.isWhite != isWhiteMove
-        }.keys.any {
-            calculateMoves(it).any { potentialCheckMove ->
-                potentialCheckMove == kingPosition
-            }
         }
     }
 
@@ -180,7 +194,7 @@ class MovesCalculator(private val board: Board) {
         // Причем проверка для любого хода!!!
     }
 
-    private fun calculateMoves(
+    private inline fun calculateMoves(
         position: Indexes,
         piece: Piece,
         forPiece: (piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>) -> Unit

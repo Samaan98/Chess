@@ -3,7 +3,9 @@ import ui.BoardText
 import ui.BoardUi
 import ui.InputProcessor
 
-private val board = Board()
+private const val IS_DEBUG = false
+
+private val board = BoardFactory().createBoard()
 private val boardUi = BoardUi()
 private val boardText = BoardText(board, boardUi)
 private val movesCalculator = MovesCalculator(board)
@@ -59,8 +61,9 @@ private fun processMove(): CommandResult {
                 is ChessError.OpponentMove ->
                     "Сейчас ход ${if (it.isWhiteMove) "белых" else "чёрных"}"
             }
-        } else it.message
+        } else "Неизвестная ошибка"
         println(message)
+        if (IS_DEBUG) it.printStackTrace()
     }.getOrElse {
         processMove()
     }

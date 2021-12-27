@@ -1,7 +1,7 @@
 package core
 
 //todo список съеденных фигур
-class Board {
+data class Board(private val _board: MutableMap<Indexes, Piece>) {
 
     companion object {
         const val SIZE = 8
@@ -12,41 +12,19 @@ class Board {
         const val PAWNS_WHITE_INITIAL_ROW_INDEX = 6
     }
 
-    // todo инициализация в цикле
-    private val _board = hashMapOf(
-        // Ладьи
-        0 to 0 to Piece(PieceType.ROOK, false),
-        0 to 7 to Piece(PieceType.ROOK, false),
-        7 to 0 to Piece(PieceType.ROOK, true),
-        7 to 7 to Piece(PieceType.ROOK, true),
-        // Кони
-        0 to 1 to Piece(PieceType.KNIGHT, false),
-        0 to 6 to Piece(PieceType.KNIGHT, false),
-        7 to 1 to Piece(PieceType.KNIGHT, true),
-        7 to 6 to Piece(PieceType.KNIGHT, true),
-        // Слоны
-        0 to 2 to Piece(PieceType.BISHOP, false),
-        0 to 5 to Piece(PieceType.BISHOP, false),
-        7 to 2 to Piece(PieceType.BISHOP, true),
-        7 to 5 to Piece(PieceType.BISHOP, true),
-        // Ферзи
-        0 to 3 to Piece(PieceType.QUEEN, false),
-        7 to 3 to Piece(PieceType.QUEEN, true),
-        // Короли
-        0 to 4 to Piece(PieceType.KING, false),
-        7 to 4 to Piece(PieceType.KING, true),
-        // Пешки
-        *Array(16) {
-            val isBlack = it < 8
-            val i = if (isBlack) PAWNS_BLACK_INITIAL_ROW_INDEX else PAWNS_WHITE_INITIAL_ROW_INDEX
-            val j = if (isBlack) it else it - 8
-            i to j to Piece(PieceType.PAWN, !isBlack)
-        }
-    )
+    private val _kingsPositions: MutableMap<Boolean, Indexes> = _board.filterValues {
+        it.type == PieceType.KING
+    }.map { (position, piece) ->
+        piece.isWhite to position
+    }.toMap(HashMap())
 
     val board: Map<Indexes, Piece> by ::_board
+    val kingsPositions: Map<Boolean, Indexes> by ::_kingsPositions
 
     operator fun get(indexes: Indexes): Piece? = board[indexes]
+
+    // this is used to also make a copy of board map
+    fun copy() = this.copy(_board = _board.toMutableMap())
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 
@@ -54,8 +32,16 @@ class Board {
         it.isWhite != isWhite
     } ?: false
 
-    fun move(moveCommand: Command.Move) {
-        val piece = _board.remove(moveCommand.from) ?: errorNoFigureAtCell(moveCommand.from)
-        _board[moveCommand.to] = piece
+    fun getAllEnemyPieces(isWhiteMove: Boolean) = board.filterValues {
+        it.isWhite != isWhiteMove
+    }
+
+    fun move(from: Indexes, to: Indexes) {
+        val piece = _board.remove(from) ?: errorNoFigureAtCell(from)
+        _board[to] = piece
+
+        if (piece.type == PieceType.KING) {
+            _kingsPositions[piece.isWhite] = to
+        }
     }
 }
