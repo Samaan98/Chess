@@ -1,5 +1,10 @@
 package core
 
+import core.board.Board
+import core.piece.Piece
+import core.piece.PieceType
+import core.util.*
+
 class MovesCalculator {
 
     /**

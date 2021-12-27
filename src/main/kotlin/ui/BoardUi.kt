@@ -1,7 +1,7 @@
 package ui
 
-import core.Board
-import core.swapKeysAndValues
+import core.board.Board
+import core.util.swapKeysAndValues
 
 class BoardUi {
 

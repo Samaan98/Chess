@@ -1,4 +1,7 @@
-package core
+package core.board
+
+import core.piece.Piece
+import core.piece.PieceType
 
 class BoardFactory {
 

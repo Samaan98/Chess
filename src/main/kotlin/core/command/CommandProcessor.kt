@@ -1,4 +1,11 @@
-package core
+package core.command
+
+import core.MovesCalculator
+import core.board.Board
+import core.util.Indexes
+import core.util.errorImpossibleMove
+import core.util.errorNoFigureAtCell
+import core.util.errorOpponentMove
 
 class CommandProcessor(
     private val board: Board,

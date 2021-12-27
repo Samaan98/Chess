@@ -1,6 +1,10 @@
 package ui
 
-import core.*
+import core.command.Command
+import core.util.Indexes
+import core.util.errorInvalidCommand
+import core.util.i
+import core.util.j
 
 //todo документация на доступные команды с примерами
 class InputProcessor(private val boardUi: BoardUi) {

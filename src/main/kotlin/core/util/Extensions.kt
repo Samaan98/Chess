@@ -1,11 +1,16 @@
-package core
+package core.util
 
-sealed class ChessError : RuntimeException() {
-    data class NoFigureAtCell(val position: Indexes) : ChessError()
-    data class ImpossibleMove(val to: Indexes) : ChessError()
-    data class InvalidCommand(val command: String) : ChessError()
-    data class OpponentMove(val isWhiteMove: Boolean) : ChessError()
-}
+import core.board.Board
+
+typealias Indexes = Pair<Int, Int>
+
+val Indexes.i get() = first
+val Indexes.j get() = second
+val Indexes.isInBounds get() = i in Board.INDICES && j in Board.INDICES
+
+fun <K, V> Map<K, V>.swapKeysAndValues(toMap: MutableMap<V, K> = mutableMapOf()) = map { (key, value) ->
+    value to key
+}.toMap(toMap)
 
 fun errorNoFigureAtCell(position: Indexes): Nothing = throw ChessError.NoFigureAtCell(position)
 fun errorImpossibleMove(to: Indexes): Nothing = throw ChessError.ImpossibleMove(to)

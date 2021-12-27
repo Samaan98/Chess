@@ -1,4 +1,4 @@
-package core
+package core.piece
 
 data class Piece(
     val type: PieceType,

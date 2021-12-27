@@ -1,14 +1,6 @@
-package core
+package core.command
 
-sealed class Command {
-
-    data class Move(
-        val from: Indexes,
-        val to: Indexes
-    ) : Command()
-
-    data class GetAvailableMoves(val from: Indexes) : Command()
-}
+import core.util.Indexes
 
 sealed class CommandResult {
     object Success : CommandResult()

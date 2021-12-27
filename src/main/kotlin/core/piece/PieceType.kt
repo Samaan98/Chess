@@ -1,4 +1,4 @@
-package core
+package core.piece
 
 enum class PieceType {
     PAWN, // пешка

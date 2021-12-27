@@ -1,5 +1,8 @@
 package core
 
+import core.command.Command
+import core.command.CommandProcessor
+import core.command.CommandResult
 import ui.InputProcessor
 
 //todo тесты на всю логику

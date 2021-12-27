@@ -1,7 +1,7 @@
 package ui
 
-import core.Piece
-import core.PieceType
+import core.piece.Piece
+import core.piece.PieceType
 
 val Piece.symbol: Char
     get() = when (type) {

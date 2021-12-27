@@ -1,7 +1,12 @@
-package core
+package core.board
+
+import core.piece.Piece
+import core.piece.PieceType
+import core.util.Indexes
+import core.util.errorNoFigureAtCell
 
 //todo список съеденных фигур
-data class Board(private val _board: MutableMap<Indexes, Piece>) {
+class Board(private val _board: MutableMap<Indexes, Piece>) {
 
     companion object {
         const val SIZE = 8
@@ -16,15 +21,14 @@ data class Board(private val _board: MutableMap<Indexes, Piece>) {
         it.type == PieceType.KING
     }.map { (position, piece) ->
         piece.isWhite to position
-    }.toMap(HashMap())
+    }.toMap(mutableMapOf())
 
     val board: Map<Indexes, Piece> by ::_board
     val kingsPositions: Map<Boolean, Indexes> by ::_kingsPositions
 
     operator fun get(indexes: Indexes): Piece? = board[indexes]
 
-    // this is used to also make a copy of board map
-    fun copy() = this.copy(_board = _board.toMutableMap())
+    fun copy() = Board(_board.toMutableMap())
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 
