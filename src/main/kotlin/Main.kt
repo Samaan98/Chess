@@ -1,8 +1,8 @@
 import core.Chess
-import core.MovesCalculator
 import core.board.BoardFactory
 import core.command.CommandProcessor
 import core.command.CommandResult
+import core.moves_calculator.MovesCalculator
 import core.util.ChessError
 import ui.BoardText
 import ui.BoardUi

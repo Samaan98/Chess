@@ -1,7 +1,7 @@
 package core.command
 
-import core.MovesCalculator
 import core.board.Board
+import core.moves_calculator.MovesCalculator
 import core.util.Indexes
 import core.util.errorImpossibleMove
 import core.util.errorNoFigureAtCell
