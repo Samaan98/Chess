@@ -19,3 +19,8 @@ tasks.withType<KotlinCompile> {
 application {
     mainClass.set("MainKt")
 }
+
+dependencies {
+    implementation(project("core"))
+    implementation(project("text_ui"))
+}

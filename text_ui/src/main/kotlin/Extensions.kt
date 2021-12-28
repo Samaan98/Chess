@@ -1,5 +1,3 @@
-package ui
-
 import core.piece.Piece
 import core.piece.PieceType
 

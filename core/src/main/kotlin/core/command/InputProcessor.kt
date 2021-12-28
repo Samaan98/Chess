@@ -1,6 +1,6 @@
-package ui
+package core.command
 
-import core.command.Command
+import core.board.BoardUi
 import core.util.errorInvalidCommand
 
 //todo документация на доступные команды с примерами

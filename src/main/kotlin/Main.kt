@@ -1,7 +1,6 @@
 import core.Chess
 import core.command.CommandResult
 import core.util.ChessError
-import ui.BoardText
 import java.io.File
 
 private const val IS_DEBUG = false
@@ -9,7 +8,7 @@ private const val IS_DEBUG = false
 private val chess = Chess()
 private val boardUi = chess.boardUi
 private val boardText = BoardText(chess.board, boardUi)
-private val inputCommands = File("info", "input_commands.txt").readLines()
+private val inputCommands = File("src/main/resources", "input_commands.txt").readLines()
 
 fun main() {
     if (IS_DEBUG && inputCommands.isNotEmpty()) {

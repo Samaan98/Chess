@@ -1,12 +1,12 @@
 package core
 
 import core.board.BoardFactory
+import core.board.BoardUi
 import core.command.Command
 import core.command.CommandProcessor
 import core.command.CommandResult
+import core.command.InputProcessor
 import core.moves_calculator.MovesCalculator
-import ui.BoardUi
-import ui.InputProcessor
 
 //todo тесты на всю логику
 // объявить ничью

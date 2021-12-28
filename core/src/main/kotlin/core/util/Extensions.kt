@@ -4,9 +4,9 @@ import core.board.Board
 
 typealias Indexes = Pair<Int, Int>
 
-internal val Indexes.i get() = first
-internal val Indexes.j get() = second
-internal val Indexes.isInBounds get() = i in Board.INDICES && j in Board.INDICES
+val Indexes.i get() = first
+val Indexes.j get() = second
+val Indexes.isInBounds get() = i in Board.INDICES && j in Board.INDICES
 
 internal fun <K, V> Map<K, V>.swapKeysAndValues(toMap: MutableMap<V, K> = mutableMapOf()) = map { (key, value) ->
     value to key

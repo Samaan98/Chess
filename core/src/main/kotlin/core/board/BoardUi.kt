@@ -1,6 +1,5 @@
-package ui
+package core.board
 
-import core.board.Board
 import core.util.*
 
 class BoardUi internal constructor() {

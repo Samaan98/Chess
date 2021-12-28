@@ -1,6 +1,5 @@
-package ui
-
 import core.board.Board
+import core.board.BoardUi
 
 class BoardText(
     private val board: Board,

@@ -2,3 +2,5 @@
 /.gradle/
 /build/
 /.idea
+/core/build
+/text_ui/build
