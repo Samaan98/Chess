@@ -13,8 +13,10 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
         const val LAST_INDEX = SIZE - 1
         val INDICES = 0..LAST_INDEX
 
-        const val PAWNS_BLACK_INITIAL_ROW_INDEX = 1
-        const val PAWNS_WHITE_INITIAL_ROW_INDEX = 6
+        const val PIECES_BLACK_INITIAL_ROW_INDEX = 0
+        const val PIECES_WHITE_INITIAL_ROW_INDEX = LAST_INDEX
+        const val PAWNS_BLACK_INITIAL_ROW_INDEX = PIECES_BLACK_INITIAL_ROW_INDEX + 1
+        const val PAWNS_WHITE_INITIAL_ROW_INDEX = PIECES_WHITE_INITIAL_ROW_INDEX - 1
     }
 
     private val _kingsPositions: MutableMap<Boolean, Indexes> = _board.filterValues {
