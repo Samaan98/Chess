@@ -4,6 +4,7 @@ import core.piece.Piece
 import core.piece.PieceType
 import core.util.Indexes
 import core.util.errorNoFigureAtCell
+import core.util.j
 
 //todo список съеденных фигур
 class Board internal constructor(private val _board: MutableMap<Indexes, Piece>) {
@@ -19,14 +20,23 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
         const val PAWNS_WHITE_INITIAL_ROW_INDEX = PIECES_WHITE_INITIAL_ROW_INDEX - 1
     }
 
-    private val _kingsPositions: MutableMap<Boolean, Indexes> = _board.filterValues {
+    private val kingsPositions = _board.filterValues {
         it.type == PieceType.KING
     }.map { (position, piece) ->
         piece.isWhite to position
     }.toMap(mutableMapOf())
 
+    private val isLeftCastlingAvailable = mutableMapOf(
+        true to true,
+        false to true
+    )
+
+    private val isRightCastlingAvailable = mutableMapOf(
+        true to true,
+        false to true
+    )
+
     val board: Map<Indexes, Piece> by ::_board
-    val kingsPositions: Map<Boolean, Indexes> by ::_kingsPositions
 
     operator fun get(indexes: Indexes): Piece? = board[indexes]
 
@@ -37,6 +47,11 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
     fun isEnemy(indexes: Indexes, isWhite: Boolean): Boolean = this[indexes]?.let {
         it.isWhite != isWhite
     } ?: false
+
+    fun isLeftCastlingAvailable(forWhite: Boolean) = isLeftCastlingAvailable.getOrDefault(forWhite, false)
+    fun isRightCastlingAvailable(forWhite: Boolean) = isRightCastlingAvailable.getOrDefault(forWhite, false)
+
+    fun getKingPosition(forWhite: Boolean) = kingsPositions[forWhite] ?: error("No king on board")
 
     fun getAllEnemyPieces(forWhite: Boolean) = board.filterValues {
         it.isWhite != forWhite
@@ -51,7 +66,39 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
         _board[to] = piece
 
         if (piece.type == PieceType.KING) {
-            _kingsPositions[piece.isWhite] = to
+            kingsPositions[piece.isWhite] = to
+        }
+
+        updateCastlingAvailability(piece, from)
+    }
+
+    /**
+     * Castling is permissible when neither the king nor the kingside or queenside
+     * rook on the same rank has previously moved.
+     */
+    private fun updateCastlingAvailability(piece: Piece, from: Indexes) {
+        val isWhite = piece.isWhite
+        val isAnyCastlingAvailable = isLeftCastlingAvailable(isWhite) || isRightCastlingAvailable(isWhite)
+        if (!isAnyCastlingAvailable) return
+
+        val isKing = piece.type == PieceType.KING
+
+        if (isKing || piece.type == PieceType.ROOK) {
+
+            if (isKing) {
+                arrayOf(
+                    isLeftCastlingAvailable,
+                    isRightCastlingAvailable
+                ).forEach {
+                    it[isWhite] = false
+                }
+            } else {
+                if (from.j == 0) { // left rook
+                    isLeftCastlingAvailable
+                } else { // right rook
+                    isRightCastlingAvailable
+                }[isWhite] = false
+            }
         }
     }
 }

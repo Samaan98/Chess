@@ -50,7 +50,7 @@ internal class MovesCalculator {
      * Detects if there's a check for [forWhite].
      */
     fun isCheck(forWhite: Boolean, board: Board): Boolean {
-        val kingPosition = board.kingsPositions[forWhite] ?: error("No king on board")
+        val kingPosition = board.getKingPosition(forWhite)
 
         return board.getAllEnemyPieces(forWhite).keys.any { enemyPiecePosition ->
             calculateMoves(enemyPiecePosition, board).any { potentialCheckMove ->
