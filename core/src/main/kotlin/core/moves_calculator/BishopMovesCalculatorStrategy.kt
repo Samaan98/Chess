@@ -25,23 +25,15 @@ internal class BishopMovesCalculatorStrategy : MovesCalculatorStrategy() {
             val nextJLeft = j - nextCellIndex
             val nextJRight = j + nextCellIndex
 
-            val nextUpLeft = nextMoveIfCanMoveOrNull(canMoveUpLeft) {
-                nextIUp to nextJLeft
-            }
-            val nextDownLeft = nextMoveIfCanMoveOrNull(canMoveDownLeft) {
-                nextIDown to nextJLeft
-            }
-            val nextUpRight = nextMoveIfCanMoveOrNull(canMoveUpRight) {
-                nextIUp to nextJRight
-            }
-            val nextDownRight = nextMoveIfCanMoveOrNull(canMoveDownRight) {
-                nextIDown to nextJRight
-            }
+            val nextUpLeft = nextMoveIfCanMoveOrNull(canMoveUpLeft) { nextIUp to nextJLeft }
+            val nextDownLeft = nextMoveIfCanMoveOrNull(canMoveDownLeft) { nextIDown to nextJLeft }
+            val nextUpRight = nextMoveIfCanMoveOrNull(canMoveUpRight) { nextIUp to nextJRight }
+            val nextDownRight = nextMoveIfCanMoveOrNull(canMoveDownRight) { nextIDown to nextJRight }
 
-            canMoveUpLeft = addMoveIfCanMove(piece, nextUpLeft, moves, board)
-            canMoveDownLeft = addMoveIfCanMove(piece, nextDownLeft, moves, board)
-            canMoveUpRight = addMoveIfCanMove(piece, nextUpRight, moves, board)
-            canMoveDownRight = addMoveIfCanMove(piece, nextDownRight, moves, board)
+            canMoveUpLeft = addMoveIfCanMoveAndCanMoveFurther(piece, nextUpLeft, moves, board)
+            canMoveDownLeft = addMoveIfCanMoveAndCanMoveFurther(piece, nextDownLeft, moves, board)
+            canMoveUpRight = addMoveIfCanMoveAndCanMoveFurther(piece, nextUpRight, moves, board)
+            canMoveDownRight = addMoveIfCanMoveAndCanMoveFurther(piece, nextDownRight, moves, board)
 
             nextCellIndex++
         }

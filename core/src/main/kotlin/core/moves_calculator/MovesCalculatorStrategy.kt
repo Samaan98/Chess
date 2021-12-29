@@ -28,9 +28,9 @@ internal abstract class MovesCalculatorStrategy {
     )
 
     /**
-     * @return can move further after this move
+     * @return can move further after this move.
      */
-    protected fun addMoveIfCanMove(
+    protected fun addMoveIfCanMoveAndCanMoveFurther(
         piece: Piece,
         nextPosition: Indexes?,
         moves: MutableSet<Indexes>,
