@@ -7,13 +7,7 @@ import core.util.isInBounds
 
 internal class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
-    override fun calculateMoves(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
+    fun getKnightMoves(i: Int, j: Int): Set<Indexes> {
         val iOneUp = i - 1
         val iOneDown = i + 1
         val iTwoUp = i - 2
@@ -32,7 +26,7 @@ internal class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
         val twoDownOneLeft = iTwoDown to jOneLeft
         val oneDownTwoLeft = iOneDown to jTwoLeft
 
-        arrayOf(
+        return setOf(
             oneUpTwoLeft,
             twoUpOneLeft,
             twoUpOneRight,
@@ -41,7 +35,11 @@ internal class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
             twoDownOneRight,
             twoDownOneLeft,
             oneDownTwoLeft
-        ).forEach {
+        )
+    }
+
+    override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
+        getKnightMoves(i, j).forEach {
             if (it.isInBounds && (board.isCellEmpty(it) || board.isEnemy(it, piece.isWhite))) {
                 moves.add(it)
             }

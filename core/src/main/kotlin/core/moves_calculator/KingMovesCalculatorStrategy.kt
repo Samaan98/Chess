@@ -6,13 +6,7 @@ import core.util.Indexes
 
 internal class KingMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
-    override fun calculateMoves(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
+    override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
         val iVariants = listOf(i - 1, i, i + 1)
         val jVariants = listOf(j - 1, j, j + 1)
 
@@ -37,13 +31,7 @@ internal class KingMovesCalculatorStrategy : MovesCalculatorStrategy() {
      * 6. The king does not end up in check. (True of any legal move.)
      */
     //todo
-    private fun calculateCastlingMoves(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
+    private fun calculateCastlingMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
         val isWhite = piece.isWhite
         if (board.isLeftCastlingAvailable(isWhite)) { // conditions #1 & #2
             if (areAllFieldsBetweenKingAndRookEmpty(i, j, board, isLeft = true)) { // condition #3
@@ -58,12 +46,7 @@ internal class KingMovesCalculatorStrategy : MovesCalculatorStrategy() {
         // condition #6 is accomplished when check moves are filtered
     }
 
-    private fun areAllFieldsBetweenKingAndRookEmpty(
-        i: Int,
-        j: Int,
-        board: Board,
-        isLeft: Boolean
-    ): Boolean {
+    private fun areAllFieldsBetweenKingAndRookEmpty(i: Int, j: Int, board: Board, isLeft: Boolean): Boolean {
         val distanceToRook = if (isLeft) 3 else 2
         return (1..distanceToRook).all { nextJ ->
             val position = i to (j + if (isLeft) -nextJ else nextJ)

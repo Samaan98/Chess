@@ -9,13 +9,7 @@ import core.util.isInBounds
 //todo достижение края доски и замена фигуры
 internal class PawnMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
-    override fun calculateMoves(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
+    override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
         val nextIBlackOrWhite = piece.blackOrWhite(1, -1)
         val nextI = i + nextIBlackOrWhite
         val next = nextI to j

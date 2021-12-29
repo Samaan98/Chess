@@ -4,43 +4,41 @@ import core.board.Board
 import core.piece.Piece
 import core.util.Indexes
 
-internal class RookMovesCalculatorStrategy : MovesCalculatorStrategy() {
+internal class RookMovesCalculatorStrategy(
+    private val boardIterator: BoardIterator
+) : MovesCalculatorStrategy() {
 
-    fun calculateMovesForRook(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
-        var canMoveLeft = true
-        var canMoveUp = true
-        var canMoveRight = true
-        var canMoveDown = true
-        var nextCellIndex = 1
+    private val left = "left"
+    private val up = "up"
+    private val right = "right"
+    private val down = "down"
 
-        while (canMoveLeft || canMoveUp || canMoveRight || canMoveDown) {
-            val nextLeft = nextMoveIfCanMoveOrNull(canMoveLeft) { i to (j - nextCellIndex) }
-            val nextUp = nextMoveIfCanMoveOrNull(canMoveUp) { (i - nextCellIndex) to j }
-            val nextRight = nextMoveIfCanMoveOrNull(canMoveRight) { i to (j + nextCellIndex) }
-            val nextDown = nextMoveIfCanMoveOrNull(canMoveDown) { (i + nextCellIndex) to j }
+    val movesIds = setOf(left, up, right, down)
 
-            canMoveLeft = addMoveIfCanMoveAndCanMoveFurther(piece, nextLeft, moves, board)
-            canMoveUp = addMoveIfCanMoveAndCanMoveFurther(piece, nextUp, moves, board)
-            canMoveRight = addMoveIfCanMoveAndCanMoveFurther(piece, nextRight, moves, board)
-            canMoveDown = addMoveIfCanMoveAndCanMoveFurther(piece, nextDown, moves, board)
+    fun produceMove(moveId: String, nextCellIndex: Int, i: Int, j: Int): Indexes {
+        val nextIUp = i - nextCellIndex
+        val nextIDown = i + nextCellIndex
+        val nextJLeft = j - nextCellIndex
+        val nextJRight = j + nextCellIndex
 
-            nextCellIndex++
+        return when (moveId) {
+            left -> i to nextJLeft
+            up -> nextIUp to j
+            right -> i to nextJRight
+            down -> nextIDown to j
+            else -> error("Unknown moveId: $moveId")
         }
     }
 
-    override fun calculateMoves(
-        piece: Piece,
-        i: Int,
-        j: Int,
-        moves: MutableSet<Indexes>,
-        board: Board
-    ) {
-        calculateMovesForRook(piece, i, j, moves, board)
+    override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
+        boardIterator.iterate(
+            movesIds = movesIds,
+            moveProducer = { moveId, nextCellIndex ->
+                produceMove(moveId, nextCellIndex, i, j)
+            },
+            iterationAction = { _, move ->
+                addMoveIfCanMoveAndCanMoveFurther(piece, move, moves, board)
+            }
+        )
     }
 }

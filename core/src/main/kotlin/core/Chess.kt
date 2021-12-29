@@ -6,9 +6,10 @@ import core.command.Command
 import core.command.CommandProcessor
 import core.command.CommandResult
 import core.command.InputProcessor
-import core.moves_calculator.MovesCalculator
+import core.moves_calculator.*
 
 //todo тесты на всю логику
+// модуль зависимостей
 // объявить ничью
 // пат
 // сдаться
@@ -21,7 +22,31 @@ class Chess {
 
     val board = BoardFactory().createBoard()
 
-    private val movesCalculator = MovesCalculator()
+    private val boardIterator = BoardIterator()
+
+    private val rookMovesCalculatorStrategy = RookMovesCalculatorStrategy(boardIterator)
+    private val bishopMovesCalculatorStrategy = BishopMovesCalculatorStrategy(boardIterator)
+    private val knightMovesCalculatorStrategy = KnightMovesCalculatorStrategy()
+
+    private val movesCalculator = MovesCalculator(
+        CheckDetector(
+            boardIterator,
+            rookMovesCalculatorStrategy,
+            bishopMovesCalculatorStrategy,
+            knightMovesCalculatorStrategy
+        ),
+        PawnMovesCalculatorStrategy(),
+        rookMovesCalculatorStrategy,
+        knightMovesCalculatorStrategy,
+        bishopMovesCalculatorStrategy,
+        QueenMovesCalculatorStrategy(
+            boardIterator,
+            rookMovesCalculatorStrategy,
+            bishopMovesCalculatorStrategy
+        ),
+        KingMovesCalculatorStrategy()
+    )
+
     private val commandProcessor = CommandProcessor(board, movesCalculator)
 
     val boardUi = BoardUi()

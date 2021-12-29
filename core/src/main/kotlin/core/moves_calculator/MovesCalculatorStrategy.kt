@@ -32,19 +32,14 @@ internal abstract class MovesCalculatorStrategy {
      */
     protected fun addMoveIfCanMoveAndCanMoveFurther(
         piece: Piece,
-        nextPosition: Indexes?,
+        nextPosition: Indexes,
         moves: MutableSet<Indexes>,
         board: Board
     ): Boolean {
-        if (nextPosition == null) return false
         return if (piece.canMoveOrCapture(nextPosition, board)) {
             moves.add(nextPosition)
             !board.isEnemy(nextPosition, piece.isWhite)
         } else false
-    }
-
-    protected inline fun nextMoveIfCanMoveOrNull(canMove: Boolean, nextMove: () -> Indexes): Indexes? {
-        return if (canMove) nextMove() else null
     }
 
     protected fun Piece.canMoveOrCapture(position: Indexes, board: Board): Boolean {

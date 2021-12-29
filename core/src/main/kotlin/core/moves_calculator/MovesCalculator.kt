@@ -6,22 +6,25 @@ import core.util.Indexes
 import core.util.errorNoFigureAtCell
 import java.util.*
 
-internal class MovesCalculator {
+internal class MovesCalculator(
+    private val checkDetector: CheckDetector,
+    private val pawnMovesCalculatorStrategy: PawnMovesCalculatorStrategy,
+    private val rookMovesCalculatorStrategy: RookMovesCalculatorStrategy,
+    private val knightMovesCalculatorStrategy: KnightMovesCalculatorStrategy,
+    private val bishopMovesCalculatorStrategy: BishopMovesCalculatorStrategy,
+    private val queenMovesCalculatorStrategy: QueenMovesCalculatorStrategy,
+    private val kingMovesCalculatorStrategy: KingMovesCalculatorStrategy
+) {
 
     private val movesCalculatorStrategy = EnumMap<PieceType, MovesCalculatorStrategy>(PieceType::class.java).apply {
-        val rookMovesCalculatorStrategy = RookMovesCalculatorStrategy()
-        val bishopMovesCalculatorStrategy = BishopMovesCalculatorStrategy()
         PieceType.values().forEach {
             val strategy = when (it) {
-                PieceType.PAWN -> PawnMovesCalculatorStrategy()
+                PieceType.PAWN -> pawnMovesCalculatorStrategy
                 PieceType.ROOK -> rookMovesCalculatorStrategy
-                PieceType.KNIGHT -> KnightMovesCalculatorStrategy()
+                PieceType.KNIGHT -> knightMovesCalculatorStrategy
                 PieceType.BISHOP -> bishopMovesCalculatorStrategy
-                PieceType.QUEEN -> QueenMovesCalculatorStrategy(
-                    rookMovesCalculatorStrategy,
-                    bishopMovesCalculatorStrategy
-                )
-                PieceType.KING -> KingMovesCalculatorStrategy()
+                PieceType.QUEEN -> queenMovesCalculatorStrategy
+                PieceType.KING -> kingMovesCalculatorStrategy
             }
             put(it, strategy)
         }
@@ -46,17 +49,8 @@ internal class MovesCalculator {
         }.toSet()
     }
 
-    /**
-     * Detects if there's a check for [forWhite].
-     */
     fun isCheck(forWhite: Boolean, board: Board): Boolean {
-        val kingPosition = board.getKingPosition(forWhite)
-
-        return board.getAllEnemyPieces(forWhite).keys.any { enemyPiecePosition ->
-            calculateMoves(enemyPiecePosition, board).any { potentialCheckMove ->
-                potentialCheckMove == kingPosition
-            }
-        }
+        return checkDetector.isCheck(forWhite, board)
     }
 
     /**
