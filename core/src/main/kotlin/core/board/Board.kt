@@ -4,7 +4,9 @@ import core.piece.Piece
 import core.piece.PieceType
 import core.util.Indexes
 import core.util.errorNoFigureAtCell
+import core.util.i
 import core.util.j
+import kotlin.math.abs
 
 //todo список съеденных фигур
 class Board internal constructor(private val _board: MutableMap<Indexes, Piece>) {
@@ -18,6 +20,11 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
         const val PIECES_WHITE_INITIAL_ROW_INDEX = LAST_INDEX
         const val PAWNS_BLACK_INITIAL_ROW_INDEX = PIECES_BLACK_INITIAL_ROW_INDEX + 1
         const val PAWNS_WHITE_INITIAL_ROW_INDEX = PIECES_WHITE_INITIAL_ROW_INDEX - 1
+
+        const val ROOK_LEFT_INDEX = 0
+        const val ROOK_RIGHT_INDEX = LAST_INDEX
+        const val DISTANCE_FROM_KING_TO_LEFT_ROOK = 3
+        const val DISTANCE_FROM_KING_TO_RIGHT_ROOK = 2
     }
 
     private val kingsPositions = _board.filterValues {
@@ -67,9 +74,29 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
 
         if (piece.type == PieceType.KING) {
             kingsPositions[piece.isWhite] = to
+
+            performCastlingIfNeeded(from, to)
         }
 
         updateCastlingAvailability(piece, from)
+    }
+
+    private fun performCastlingIfNeeded(from: Indexes, to: Indexes) {
+        val isCastling = abs(to.j - from.j) == 2
+        if (!isCastling) return
+
+        val isLeftCastling = to.j < from.j
+
+        val rookFromJ = if (isLeftCastling) ROOK_LEFT_INDEX else ROOK_RIGHT_INDEX
+        val rookToJ = rookFromJ + if (isLeftCastling) {
+            DISTANCE_FROM_KING_TO_LEFT_ROOK
+        } else {
+            -DISTANCE_FROM_KING_TO_RIGHT_ROOK
+        }
+        val rookFrom = from.i to rookFromJ
+        val rookTo = from.i to rookToJ
+
+        move(rookFrom, rookTo)
     }
 
     /**

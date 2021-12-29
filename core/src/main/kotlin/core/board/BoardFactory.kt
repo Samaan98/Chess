@@ -10,7 +10,7 @@ internal class BoardFactory {
         mutableMapOf<Indexes, Piece>().apply {
             for (j in Board.INDICES) {
                 val pieceType = when (j) {
-                    0, 7 -> PieceType.ROOK
+                    Board.ROOK_LEFT_INDEX, Board.ROOK_RIGHT_INDEX -> PieceType.ROOK
                     1, 6 -> PieceType.KNIGHT
                     2, 5 -> PieceType.BISHOP
                     3 -> PieceType.QUEEN

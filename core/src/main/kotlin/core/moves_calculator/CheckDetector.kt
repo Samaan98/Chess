@@ -57,6 +57,14 @@ internal class CheckDetector(
         return false
     }
 
+    fun isCheckAfterMove(forWhite: Boolean, from: Indexes, to: Indexes, board: Board): Boolean {
+        return board.copy().apply { // copy the board
+            move(from, to) // move the piece on the copied board
+        }.let { modifiedCopiedBoard ->
+            isCheck(forWhite = forWhite, board = modifiedCopiedBoard) // check if this move leads to check
+        }
+    }
+
     private fun hasCheckingPawns(isWhite: Boolean, i: Int, j: Int, board: Board): Boolean {
         val checkingPawnI = i + if (isWhite) -1 else 1
         val leftCheckingPawnPosition = checkingPawnI to (j - 1)

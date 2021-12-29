@@ -41,11 +41,7 @@ internal class MovesCalculator(
         board: Board
     ): Set<Indexes> {
         return calculateMoves(position, board).filter { potentialMoveTo ->
-            board.copy().apply { // copy the board
-                move(position, potentialMoveTo) // move the piece on the copied board
-            }.let { modifiedCopiedBoard ->
-                !isCheck(forWhite = forWhite, board = modifiedCopiedBoard) // check if this move leads to check
-            }
+            !checkDetector.isCheckAfterMove(forWhite, position, potentialMoveTo, board)
         }.toSet()
     }
 

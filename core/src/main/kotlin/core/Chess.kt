@@ -28,13 +28,15 @@ class Chess {
     private val bishopMovesCalculatorStrategy = BishopMovesCalculatorStrategy(boardIterator)
     private val knightMovesCalculatorStrategy = KnightMovesCalculatorStrategy()
 
+    private val checkDetector = CheckDetector(
+        boardIterator,
+        rookMovesCalculatorStrategy,
+        bishopMovesCalculatorStrategy,
+        knightMovesCalculatorStrategy
+    )
+
     private val movesCalculator = MovesCalculator(
-        CheckDetector(
-            boardIterator,
-            rookMovesCalculatorStrategy,
-            bishopMovesCalculatorStrategy,
-            knightMovesCalculatorStrategy
-        ),
+        checkDetector,
         PawnMovesCalculatorStrategy(),
         rookMovesCalculatorStrategy,
         knightMovesCalculatorStrategy,
@@ -44,7 +46,7 @@ class Chess {
             rookMovesCalculatorStrategy,
             bishopMovesCalculatorStrategy
         ),
-        KingMovesCalculatorStrategy()
+        KingMovesCalculatorStrategy(checkDetector)
     )
 
     private val commandProcessor = CommandProcessor(board, movesCalculator)
