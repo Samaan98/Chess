@@ -12,16 +12,19 @@ internal class CommandProcessor(
     private val movesCalculator: MovesCalculator
 ) {
 
-    fun process(command: Command, isWhiteMove: Boolean): CommandResult {
+    // todo remove isWhiteMove from everywhere?
+    private val isWhiteMove by board::isWhiteMove
+
+    fun process(command: Command): CommandResult {
         return when (command) {
-            is Command.Move -> processMoveCommand(command, isWhiteMove)
-            is Command.GetAvailableMoves -> processGetAvailableMovesCommand(command, isWhiteMove)
+            is Command.Move -> processMoveCommand(command)
+            is Command.GetAvailableMoves -> processGetAvailableMovesCommand(command)
         }
     }
 
-    private fun processMoveCommand(moveCommand: Command.Move, isWhiteMove: Boolean): CommandResult {
+    private fun processMoveCommand(moveCommand: Command.Move): CommandResult {
         val from = moveCommand.from
-        from.ensureNotOpponentMove(isWhiteMove)
+        from.ensureNotOpponentMove()
 
         val availableMoves = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
 
@@ -32,7 +35,7 @@ internal class CommandProcessor(
         val enemy = !isWhiteMove
         val isCheckForEnemy = movesCalculator.isCheck(forWhite = enemy, board)
 
-        return if (isCheckForEnemy) {
+        val result = if (isCheckForEnemy) {
             val isCheckmateForEnemy = movesCalculator.isCheckmate(forWhite = enemy, board)
             if (isCheckmateForEnemy) {
                 CommandResult.Checkmate
@@ -42,21 +45,22 @@ internal class CommandProcessor(
         } else {
             CommandResult.Success
         }
+
+        board.toggleMove()
+
+        return result
     }
 
-    private fun processGetAvailableMovesCommand(
-        getAvailableMovesCommand: Command.GetAvailableMoves,
-        isWhiteMove: Boolean
-    ): CommandResult {
+    private fun processGetAvailableMovesCommand(getAvailableMovesCommand: Command.GetAvailableMoves): CommandResult {
         val from = getAvailableMovesCommand.from
-        from.ensureNotOpponentMove(isWhiteMove)
+        from.ensureNotOpponentMove()
 
         return CommandResult.AvailableMoves(
             data = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
         )
     }
 
-    private fun Indexes.ensureNotOpponentMove(isWhiteMove: Boolean) {
+    private fun Indexes.ensureNotOpponentMove() {
         val piece = board[this] ?: errorNoFigureAtCell(this)
         if (piece.isWhite != isWhiteMove) errorOpponentMove(isWhiteMove)
     }

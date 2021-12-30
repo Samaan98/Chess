@@ -13,7 +13,7 @@ private val inputCommands = File("src/main/resources", "input_commands.txt").rea
 fun main() {
     if (IS_DEBUG && inputCommands.isNotEmpty()) {
         inputCommands.forEach {
-            chess.makeMove(it)
+            chess.processInputCommand(it)
         }
     }
     startGame()
@@ -54,7 +54,7 @@ private fun startGame() {
 private fun processMove(): CommandResult {
     return runCatching {
         val input = readLine()!!
-        chess.makeMove(input)
+        chess.processInputCommand(input)
     }.onFailure {
         val message = if (it is ChessError) {
             when (it) {

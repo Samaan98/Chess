@@ -9,7 +9,14 @@ import core.util.j
 import kotlin.math.abs
 
 //todo список съеденных фигур
-class Board internal constructor(private val _board: MutableMap<Indexes, Piece>) {
+class Board internal constructor(
+    private val _board: MutableMap<Indexes, Piece>,
+    kingsPositions: MutableMap<Boolean, Indexes>? = null,
+    isLeftCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
+    isRightCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
+    isWhiteMove: Boolean? = null,
+    canBeCapturedEnPassant: Indexes? = null
+) {
 
     companion object {
         const val SIZE = 8
@@ -23,31 +30,56 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
 
         const val ROOK_LEFT_INDEX = 0
         const val ROOK_RIGHT_INDEX = LAST_INDEX
+
         const val DISTANCE_FROM_KING_TO_LEFT_ROOK = 3
         const val DISTANCE_FROM_KING_TO_RIGHT_ROOK = 2
+
+        const val EN_PASSANT_PAWN_WHITE_ROW_INDEX = 3
+        const val EN_PASSANT_PAWN_BLACK_ROW_INDEX = 4
     }
 
-    private val kingsPositions = _board.filterValues {
+    private val kingsPositions = kingsPositions ?: _board.filterValues {
         it.type == PieceType.KING
     }.map { (position, piece) ->
         piece.isWhite to position
     }.toMap(mutableMapOf())
 
-    private val isLeftCastlingAvailable = mutableMapOf(
+    private val isLeftCastlingAvailable = isLeftCastlingAvailable ?: mutableMapOf(
         true to true,
         false to true
     )
 
-    private val isRightCastlingAvailable = mutableMapOf(
+    private val isRightCastlingAvailable = isRightCastlingAvailable ?: mutableMapOf(
         true to true,
         false to true
     )
+
+    var isWhiteMove = isWhiteMove ?: true
+        private set
+
+    var canBeCapturedEnPassant: Indexes? = canBeCapturedEnPassant
+        private set
 
     val board: Map<Indexes, Piece> by ::_board
 
     operator fun get(indexes: Indexes): Piece? = board[indexes]
 
-    fun copy() = Board(_board.toMutableMap())
+    /**
+     * Copy the board. Primarily used to detect hypothetical checks.
+     * This copy is expected to be kinda like a deep copy.
+     */
+    fun copy() = Board(
+        _board = _board.toMutableMap(),
+        kingsPositions = kingsPositions.toMutableMap(),
+        isLeftCastlingAvailable = isLeftCastlingAvailable.toMutableMap(),
+        isRightCastlingAvailable = isRightCastlingAvailable.toMutableMap(),
+        isWhiteMove = isWhiteMove,
+        canBeCapturedEnPassant = canBeCapturedEnPassant?.copy()
+    )
+
+    fun toggleMove() {
+        isWhiteMove = !isWhiteMove
+    }
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 
@@ -69,16 +101,31 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
     }
 
     fun move(from: Indexes, to: Indexes) {
+        val lastCanBeCapturedEnPassant = canBeCapturedEnPassant
+        canBeCapturedEnPassant = null
+
         val piece = _board.remove(from) ?: errorNoFigureAtCell(from)
         _board[to] = piece
 
-        if (piece.type == PieceType.KING) {
-            kingsPositions[piece.isWhite] = to
-
-            performCastlingIfNeeded(from, to)
+        when (piece.type) {
+            PieceType.KING -> {
+                kingsPositions[piece.isWhite] = to
+                performCastlingIfNeeded(from, to)
+                updateCastlingAvailability(piece, from)
+            }
+            PieceType.ROOK -> {
+                updateCastlingAvailability(piece, from)
+            }
+            PieceType.PAWN -> {
+                performEnPassantCaptureIfNeeded(lastCanBeCapturedEnPassant, to)
+                if (abs(to.i - from.i) == 2) { // double-step move
+                    canBeCapturedEnPassant = to
+                }
+            }
+            else -> {
+                // do nothing
+            }
         }
-
-        updateCastlingAvailability(piece, from)
     }
 
     private fun performCastlingIfNeeded(from: Indexes, to: Indexes) {
@@ -100,8 +147,8 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
     }
 
     /**
-     * Castling is permissible when neither the king nor the kingside or queenside
-     * rook on the same rank has previously moved.
+     * Castling is permissible when neither the king nor the kingside or queenside rook on the same rank
+     * has previously moved.
      */
     private fun updateCastlingAvailability(piece: Piece, from: Indexes) {
         val isWhite = piece.isWhite
@@ -109,9 +156,7 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
         if (!isAnyCastlingAvailable) return
 
         val isKing = piece.type == PieceType.KING
-
         if (isKing || piece.type == PieceType.ROOK) {
-
             if (isKing) {
                 arrayOf(
                     isLeftCastlingAvailable,
@@ -120,12 +165,19 @@ class Board internal constructor(private val _board: MutableMap<Indexes, Piece>)
                     it[isWhite] = false
                 }
             } else {
-                if (from.j == 0) { // left rook
+                if (from.j == ROOK_LEFT_INDEX) {
                     isLeftCastlingAvailable
-                } else { // right rook
+                } else {
                     isRightCastlingAvailable
                 }[isWhite] = false
             }
+        }
+    }
+
+    private fun performEnPassantCaptureIfNeeded(lastCanBeCapturedEnPassant: Indexes?, to: Indexes) {
+        if (lastCanBeCapturedEnPassant == null) return
+        if (lastCanBeCapturedEnPassant.j == to.j) {
+            _board.remove(lastCanBeCapturedEnPassant)
         }
     }
 }

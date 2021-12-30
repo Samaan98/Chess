@@ -43,3 +43,9 @@ g1 f3
 g8 f6
 b1 c3
 b8 c6
+
+En Passant Test:
+e2 e4
+b7 b5
+e4 e5
+b5 b4

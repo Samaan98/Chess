@@ -2,7 +2,6 @@ package core
 
 import core.board.BoardFactory
 import core.board.BoardUi
-import core.command.Command
 import core.command.CommandProcessor
 import core.command.CommandResult
 import core.command.InputProcessor
@@ -54,17 +53,8 @@ class Chess {
     val boardUi = BoardUi()
     private val inputProcessor = InputProcessor(boardUi)
 
-    private var isWhiteMove = true
-
-    fun makeMove(input: String): CommandResult {
-
+    fun processInputCommand(input: String): CommandResult {
         val command = inputProcessor.parse(input)
-        val result = commandProcessor.process(command, isWhiteMove)
-
-        if (command !is Command.GetAvailableMoves) {
-            isWhiteMove = !isWhiteMove
-        }
-
-        return result
+        return commandProcessor.process(command)
     }
 }
