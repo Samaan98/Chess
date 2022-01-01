@@ -15,13 +15,13 @@ internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetec
             for (jVariant in jVariants) {
                 if (iVariant == i && jVariant == j) continue
                 val move = iVariant to jVariant
-                if (piece.canMoveOrCapture(move, board)) {
+                if (canMoveOrCapture(move, board)) {
                     moves.add(move)
                 }
             }
         }
 
-        calculateCastlingMoves(piece, i, j, moves, board)
+        calculateCastlingMoves(i, j, moves, board)
     }
 
     /**
@@ -33,14 +33,12 @@ internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetec
      * 5. The king does not pass through a square that is attacked by an enemy piece.
      * 6. The king does not end up in check. (True of any legal move.)
      */
-    private fun calculateCastlingMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
-        val isWhite = piece.isWhite
-
-        val isLeftCastlingAvailable = board.isLeftCastlingAvailable(isWhite) // conditions #1 & #2
-        val isRightCastlingAvailable = board.isRightCastlingAvailable(isWhite) // conditions #1 & #2
+    private fun calculateCastlingMoves(i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
+        val isLeftCastlingAvailable = board.isLeftCastlingAvailable() // conditions #1 & #2
+        val isRightCastlingAvailable = board.isRightCastlingAvailable() // conditions #1 & #2
 
         val isAnyCastlingAvailable = isLeftCastlingAvailable || isRightCastlingAvailable
-        if (!isAnyCastlingAvailable || checkDetector.isCheck(isWhite, board)) return // condition #3
+        if (!isAnyCastlingAvailable || checkDetector.isCheck(board)) return // condition #3
 
         var isLeft = true
         repeat(2) {
@@ -48,7 +46,7 @@ internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetec
                 if (areAllFieldsBetweenKingAndRookEmpty(i, j, board, isLeft = isLeft)) { // condition #4
                     val nextJ = if (isLeft) -1 else 1
                     val nextMove = i to j + nextJ
-                    if (!checkDetector.isCheckAfterMove(isWhite, i to j, nextMove, board)) { // condition #5
+                    if (!checkDetector.isCheckAfterMove(i to j, nextMove, board)) { // condition #5
                         moves.add(i to nextMove.j + nextJ)
                     }
                 }

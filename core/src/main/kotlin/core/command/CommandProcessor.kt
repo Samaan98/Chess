@@ -12,9 +12,6 @@ internal class CommandProcessor(
     private val movesCalculator: MovesCalculator
 ) {
 
-    // todo remove isWhiteMove from everywhere?
-    private val isWhiteMove by board::isWhiteMove
-
     fun process(command: Command): CommandResult {
         return when (command) {
             is Command.Move -> processMoveCommand(command)
@@ -26,17 +23,17 @@ internal class CommandProcessor(
         val from = moveCommand.from
         from.ensureNotOpponentMove()
 
-        val availableMoves = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
+        val availableMoves = movesCalculator.calculateMovesWithCheckMovesFiltered(from, board)
 
         if (moveCommand.to !in availableMoves) errorImpossibleMove(moveCommand.to)
 
         board.move(moveCommand.from, moveCommand.to)
+        board.toggleMove()
 
-        val enemy = !isWhiteMove
-        val isCheckForEnemy = movesCalculator.isCheck(forWhite = enemy, board)
+        val isCheck = movesCalculator.isCheck(board)
 
-        val result = if (isCheckForEnemy) {
-            val isCheckmateForEnemy = movesCalculator.isCheckmate(forWhite = enemy, board)
+        return if (isCheck) {
+            val isCheckmateForEnemy = movesCalculator.isCheckmate(board)
             if (isCheckmateForEnemy) {
                 CommandResult.Checkmate
             } else {
@@ -45,10 +42,6 @@ internal class CommandProcessor(
         } else {
             CommandResult.Success
         }
-
-        board.toggleMove()
-
-        return result
     }
 
     private fun processGetAvailableMovesCommand(getAvailableMovesCommand: Command.GetAvailableMoves): CommandResult {
@@ -56,12 +49,13 @@ internal class CommandProcessor(
         from.ensureNotOpponentMove()
 
         return CommandResult.AvailableMoves(
-            data = movesCalculator.calculateMovesWithCheckMovesFiltered(from, isWhiteMove, board)
+            data = movesCalculator.calculateMovesWithCheckMovesFiltered(from, board)
         )
     }
 
     private fun Indexes.ensureNotOpponentMove() {
         val piece = board[this] ?: errorNoFigureAtCell(this)
+        val isWhiteMove = board.isWhiteMove
         if (piece.isWhite != isWhiteMove) errorOpponentMove(isWhiteMove)
     }
 }

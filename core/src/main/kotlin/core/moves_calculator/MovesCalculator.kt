@@ -35,27 +35,22 @@ internal class MovesCalculator(
      * Such moves that lead to check are filtered.
      * @return a set of available moves.
      */
-    fun calculateMovesWithCheckMovesFiltered(
-        position: Indexes,
-        forWhite: Boolean,
-        board: Board
-    ): Set<Indexes> {
+    fun calculateMovesWithCheckMovesFiltered(position: Indexes, board: Board): Set<Indexes> {
         return calculateMoves(position, board).filter { potentialMoveTo ->
-            !checkDetector.isCheckAfterMove(forWhite, position, potentialMoveTo, board)
+            !checkDetector.isCheckAfterMove(position, potentialMoveTo, board)
         }.toSet()
     }
 
-    fun isCheck(forWhite: Boolean, board: Board): Boolean {
-        return checkDetector.isCheck(forWhite, board)
+    fun isCheck(board: Board): Boolean {
+        return checkDetector.isCheck(board)
     }
 
     /**
-     * Detects if there's a checkmate for [forWhite].
-     * If [forWhite] has any moves that can possibly get king out of check, then there's no checkmate.
+     * If there are any moves that can possibly get king out of check, then there's no checkmate.
      */
-    fun isCheckmate(forWhite: Boolean, board: Board): Boolean {
-        val hasAnyMoves = board.getAllPieces(forWhite = forWhite).keys.any { position ->
-            calculateMovesWithCheckMovesFiltered(position, forWhite, board).isNotEmpty()
+    fun isCheckmate(board: Board): Boolean {
+        val hasAnyMoves = board.getAllMyPieces().keys.any { position ->
+            calculateMovesWithCheckMovesFiltered(position, board).isNotEmpty()
         }
         return !hasAnyMoves
     }

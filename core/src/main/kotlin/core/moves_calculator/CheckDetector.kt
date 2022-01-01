@@ -18,16 +18,13 @@ internal class CheckDetector(
     private val horizontalVerticalCheckingEnemies = EnumSet.of(PieceType.ROOK, PieceType.QUEEN)
     private val diagonalCheckingEnemies = EnumSet.of(PieceType.BISHOP, PieceType.QUEEN)
 
-    /**
-     * Detects if there's a check for [forWhite].
-     */
-    fun isCheck(forWhite: Boolean, board: Board): Boolean {
-        val kingPosition = board.getKingPosition(forWhite)
+    fun isCheck(board: Board): Boolean {
+        val kingPosition = board.getKingPosition()
         val i = kingPosition.i
         val j = kingPosition.j
 
         // pawns and knights
-        if (hasCheckingPawns(forWhite, i, j, board) || hasCheckingKnights(forWhite, i, j, board)) return true
+        if (hasCheckingPawns(i, j, board) || hasCheckingKnights(i, j, board)) return true
 
         val rookMovesIds = rookMovesCalculatorStrategy.movesIds
         val bishopMovesIds = bishopMovesCalculatorStrategy.movesIds
@@ -44,9 +41,8 @@ internal class CheckDetector(
             },
             iterationAction = { moveId, move ->
                 doIfHasCheckingEnemyAndCanMoveFurther(
-                    forWhite,
-                    move,
-                    board,
+                    nextPosition = move,
+                    board = board,
                     diagonal = moveId in bishopMovesIds
                 ) {
                     return true
@@ -57,15 +53,16 @@ internal class CheckDetector(
         return false
     }
 
-    fun isCheckAfterMove(forWhite: Boolean, from: Indexes, to: Indexes, board: Board): Boolean {
+    fun isCheckAfterMove(from: Indexes, to: Indexes, board: Board): Boolean {
         return board.copy().apply { // copy the board
             move(from, to) // move the piece on the copied board
         }.let { modifiedCopiedBoard ->
-            isCheck(forWhite = forWhite, board = modifiedCopiedBoard) // check if this move leads to check
+            isCheck(board = modifiedCopiedBoard) // check if this move leads to check
         }
     }
 
-    private fun hasCheckingPawns(isWhite: Boolean, i: Int, j: Int, board: Board): Boolean {
+    private fun hasCheckingPawns(i: Int, j: Int, board: Board): Boolean {
+        val isWhite = board.isWhiteMove
         val checkingPawnI = i + if (isWhite) -1 else 1
         val leftCheckingPawnPosition = checkingPawnI to (j - 1)
         val rightCheckingPawnPosition = checkingPawnI to (j + 1)
@@ -76,16 +73,15 @@ internal class CheckDetector(
         }
     }
 
-    private fun hasCheckingKnights(isWhite: Boolean, i: Int, j: Int, board: Board): Boolean {
+    private fun hasCheckingKnights(i: Int, j: Int, board: Board): Boolean {
         return knightMovesCalculatorStrategy.getKnightMoves(i, j).any { position ->
             board[position]?.let { piece ->
-                piece.isWhite != isWhite && piece.type == PieceType.KNIGHT
+                piece.isWhite != board.isWhiteMove && piece.type == PieceType.KNIGHT
             } ?: false
         }
     }
 
     private inline fun doIfHasCheckingEnemyAndCanMoveFurther(
-        isWhite: Boolean,
         nextPosition: Indexes?,
         board: Board,
         diagonal: Boolean,
@@ -94,7 +90,7 @@ internal class CheckDetector(
         if (nextPosition == null || !nextPosition.isInBounds) return false
         val pieceAtNextPosition = board[nextPosition]
         return if (pieceAtNextPosition != null) {
-            val isEnemy = pieceAtNextPosition.isWhite != isWhite
+            val isEnemy = pieceAtNextPosition.isWhite != board.isWhiteMove
             val checkingEnemies = if (diagonal) diagonalCheckingEnemies else horizontalVerticalCheckingEnemies
             if (isEnemy && pieceAtNextPosition.type in checkingEnemies) {
                 checkingEnemyAction()

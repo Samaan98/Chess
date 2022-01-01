@@ -40,7 +40,7 @@ internal class KnightMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
         getKnightMoves(i, j).forEach {
-            if (it.isInBounds && (board.isCellEmpty(it) || board.isEnemy(it, piece.isWhite))) {
+            if (it.isInBounds && (board.isCellEmpty(it) || board.isEnemy(it))) {
                 moves.add(it)
             }
         }

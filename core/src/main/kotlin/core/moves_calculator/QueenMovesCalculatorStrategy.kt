@@ -25,7 +25,7 @@ internal class QueenMovesCalculatorStrategy(
                 }
             },
             iterationAction = { _, move ->
-                addMoveIfCanMoveAndCanMoveFurther(piece, move, moves, board)
+                addMoveIfCanMoveAndCanMoveFurther(move, moves, board)
             }
         )
     }

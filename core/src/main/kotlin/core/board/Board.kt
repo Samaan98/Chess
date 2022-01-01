@@ -83,21 +83,21 @@ class Board internal constructor(
 
     fun isCellEmpty(indexes: Indexes): Boolean = this[indexes] == null
 
-    fun isEnemy(indexes: Indexes, isWhite: Boolean): Boolean = this[indexes]?.let {
-        it.isWhite != isWhite
+    fun isEnemy(indexes: Indexes): Boolean = this[indexes]?.let {
+        it.isWhite != isWhiteMove
     } ?: false
 
-    fun isLeftCastlingAvailable(forWhite: Boolean) = isLeftCastlingAvailable.getOrDefault(forWhite, false)
-    fun isRightCastlingAvailable(forWhite: Boolean) = isRightCastlingAvailable.getOrDefault(forWhite, false)
+    fun isLeftCastlingAvailable() = isLeftCastlingAvailable.getOrDefault(isWhiteMove, false)
+    fun isRightCastlingAvailable() = isRightCastlingAvailable.getOrDefault(isWhiteMove, false)
 
-    fun getKingPosition(forWhite: Boolean) = kingsPositions[forWhite] ?: error("No king on board")
+    fun getKingPosition() = kingsPositions[isWhiteMove] ?: error("No king on board")
 
-    fun getAllEnemyPieces(forWhite: Boolean) = board.filterValues {
-        it.isWhite != forWhite
+    fun getAllEnemyPieces() = board.filterValues {
+        it.isWhite != isWhiteMove
     }
 
-    fun getAllPieces(forWhite: Boolean) = board.filterValues {
-        it.isWhite == forWhite
+    fun getAllMyPieces() = board.filterValues {
+        it.isWhite == isWhiteMove
     }
 
     fun move(from: Indexes, to: Indexes) {
@@ -151,12 +151,12 @@ class Board internal constructor(
      * has previously moved.
      */
     private fun updateCastlingAvailability(piece: Piece, from: Indexes) {
-        val isWhite = piece.isWhite
-        val isAnyCastlingAvailable = isLeftCastlingAvailable(isWhite) || isRightCastlingAvailable(isWhite)
+        val isAnyCastlingAvailable = isLeftCastlingAvailable() || isRightCastlingAvailable()
         if (!isAnyCastlingAvailable) return
 
         val isKing = piece.type == PieceType.KING
         if (isKing || piece.type == PieceType.ROOK) {
+            val isWhite = piece.isWhite
             if (isKing) {
                 arrayOf(
                     isLeftCastlingAvailable,

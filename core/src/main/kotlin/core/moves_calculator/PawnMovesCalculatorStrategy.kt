@@ -29,7 +29,7 @@ internal class PawnMovesCalculatorStrategy : MovesCalculatorStrategy() {
         val nextCaptureLeft = nextI to j - 1
         val nextCaptureRight = nextI to j + 1
         arrayOf(nextCaptureLeft, nextCaptureRight).forEach {
-            if (it.isInBounds && board.isEnemy(it, piece.isWhite)) {
+            if (it.isInBounds && board.isEnemy(it)) {
                 moves.add(it)
             }
         }

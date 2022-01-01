@@ -31,18 +31,17 @@ internal abstract class MovesCalculatorStrategy {
      * @return can move further after this move.
      */
     protected fun addMoveIfCanMoveAndCanMoveFurther(
-        piece: Piece,
         nextPosition: Indexes,
         moves: MutableSet<Indexes>,
         board: Board
     ): Boolean {
-        return if (piece.canMoveOrCapture(nextPosition, board)) {
+        return if (canMoveOrCapture(nextPosition, board)) {
             moves.add(nextPosition)
-            !board.isEnemy(nextPosition, piece.isWhite)
+            !board.isEnemy(nextPosition)
         } else false
     }
 
-    protected fun Piece.canMoveOrCapture(position: Indexes, board: Board): Boolean {
-        return position.isInBounds && (board.isCellEmpty(position) || board.isEnemy(position, isWhite))
+    protected fun canMoveOrCapture(position: Indexes, board: Board): Boolean {
+        return position.isInBounds && (board.isCellEmpty(position) || board.isEnemy(position))
     }
 }
