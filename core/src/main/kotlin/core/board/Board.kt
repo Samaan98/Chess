@@ -123,7 +123,7 @@ class Board internal constructor(
                 updateCastlingAvailability(piece, from)
             }
             PieceType.PAWN -> {
-                performEnPassantCaptureIfNeeded(lastCanBeCapturedEnPassant, to)
+                performEnPassantCaptureIfNeeded(piece, to, lastCanBeCapturedEnPassant)
                 if (abs(to.i - from.i) == 2) { // double-step move
                     canBeCapturedEnPassant = to
                 }
@@ -180,9 +180,11 @@ class Board internal constructor(
         }
     }
 
-    private fun performEnPassantCaptureIfNeeded(lastCanBeCapturedEnPassant: Indexes?, to: Indexes) {
+    private fun performEnPassantCaptureIfNeeded(piece: Piece, to: Indexes, lastCanBeCapturedEnPassant: Indexes?) {
         if (lastCanBeCapturedEnPassant == null) return
-        if (lastCanBeCapturedEnPassant.j == to.j) {
+        val isInEnPassantFiled = lastCanBeCapturedEnPassant.j == to.j &&
+                (lastCanBeCapturedEnPassant.i + piece.blackOrWhite(1, -1)) == to.i
+        if (isInEnPassantFiled) {
             _board.remove(lastCanBeCapturedEnPassant)?.addToCapturedList()
         }
     }
