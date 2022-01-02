@@ -8,14 +8,14 @@ import core.util.i
 import core.util.j
 import kotlin.math.abs
 
-//todo список съеденных фигур
 class Board internal constructor(
     private val _board: MutableMap<Indexes, Piece>,
     kingsPositions: MutableMap<Boolean, Indexes>? = null,
     isLeftCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
     isRightCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
     isWhiteMove: Boolean? = null,
-    canBeCapturedEnPassant: Indexes? = null
+    canBeCapturedEnPassant: Indexes? = null,
+    capturedPieces: MutableList<Piece>? = null
 ) {
 
     companion object {
@@ -54,6 +54,8 @@ class Board internal constructor(
         false to true
     )
 
+    private val _capturedPieces = capturedPieces ?: mutableListOf()
+
     var isWhiteMove = isWhiteMove ?: true
         private set
 
@@ -61,6 +63,8 @@ class Board internal constructor(
         private set
 
     val board: Map<Indexes, Piece> by ::_board
+
+    val capturedPieces: List<Piece> by ::_capturedPieces
 
     operator fun get(indexes: Indexes): Piece? = board[indexes]
 
@@ -74,7 +78,8 @@ class Board internal constructor(
         isLeftCastlingAvailable = isLeftCastlingAvailable.toMutableMap(),
         isRightCastlingAvailable = isRightCastlingAvailable.toMutableMap(),
         isWhiteMove = isWhiteMove,
-        canBeCapturedEnPassant = canBeCapturedEnPassant?.copy()
+        canBeCapturedEnPassant = canBeCapturedEnPassant?.copy(),
+        capturedPieces = _capturedPieces.toMutableList()
     )
 
     fun toggleMove() {
@@ -105,6 +110,7 @@ class Board internal constructor(
         canBeCapturedEnPassant = null
 
         val piece = _board.remove(from) ?: errorNoFigureAtCell(from)
+        _board.remove(to)?.addToCapturedList()
         _board[to] = piece
 
         when (piece.type) {
@@ -177,7 +183,11 @@ class Board internal constructor(
     private fun performEnPassantCaptureIfNeeded(lastCanBeCapturedEnPassant: Indexes?, to: Indexes) {
         if (lastCanBeCapturedEnPassant == null) return
         if (lastCanBeCapturedEnPassant.j == to.j) {
-            _board.remove(lastCanBeCapturedEnPassant)
+            _board.remove(lastCanBeCapturedEnPassant)?.addToCapturedList()
         }
+    }
+
+    private fun Piece.addToCapturedList() {
+        _capturedPieces.add(this)
     }
 }
