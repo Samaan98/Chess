@@ -7,7 +7,6 @@ import core.util.isInBounds
 import core.util.j
 import kotlin.math.abs
 
-//todo достижение края доски и замена фигуры
 internal class PawnMovesCalculatorStrategy : MovesCalculatorStrategy() {
 
     override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {

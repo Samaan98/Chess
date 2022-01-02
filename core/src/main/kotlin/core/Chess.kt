@@ -2,6 +2,7 @@ package core
 
 import core.board.BoardFactory
 import core.board.BoardUi
+import core.board.PawnPromotionCallback
 import core.command.CommandProcessor
 import core.command.CommandResult
 import core.command.InputProcessor
@@ -17,9 +18,9 @@ import core.moves_calculator.*
 // король может атаковать короля противника лишь при помощи «вскрытого» шаха
 // ПРОЧИТАТЬ ПРО ВСЕ КОРНЕРКЕЙСЫ, КОТОРЫХ ПРОСТО, СУКА, МИЛЛИОН
 // параллельные вычисления для сложных операций
-class Chess {
+class Chess(pawnPromotionCallback: PawnPromotionCallback) {
 
-    val board = BoardFactory().createBoard()
+    val board = BoardFactory(pawnPromotionCallback).createBoard()
 
     private val boardIterator = BoardIterator()
 

@@ -10,6 +10,7 @@ import kotlin.math.abs
 
 class Board internal constructor(
     private val _board: MutableMap<Indexes, Piece>,
+    private val pawnPromotionCallback: PawnPromotionCallback? = null,
     kingsPositions: MutableMap<Boolean, Indexes>? = null,
     isLeftCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
     isRightCastlingAvailable: MutableMap<Boolean, Boolean>? = null,
@@ -126,6 +127,12 @@ class Board internal constructor(
                 performEnPassantCaptureIfNeeded(piece, to, lastCanBeCapturedEnPassant)
                 if (abs(to.i - from.i) == 2) { // double-step move
                     canBeCapturedEnPassant = to
+                }
+                val hasReachedLastRow = to.i == piece.blackOrWhite(LAST_INDEX, 0)
+                if (hasReachedLastRow && pawnPromotionCallback != null) {
+                    _board.remove(to)
+                        ?.copy(type = pawnPromotionCallback.getPawnPromotionType().toPieceType())
+                        ?.also { replacingPiece -> _board[to] = replacingPiece }
                 }
             }
             else -> {

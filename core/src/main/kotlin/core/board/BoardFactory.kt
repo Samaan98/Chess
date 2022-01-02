@@ -4,7 +4,7 @@ import core.piece.Piece
 import core.piece.PieceType
 import core.util.Indexes
 
-internal class BoardFactory {
+internal class BoardFactory(private val pawnPromotionCallback: PawnPromotionCallback) {
 
     fun createBoard() = Board(
         mutableMapOf<Indexes, Piece>().apply {
@@ -19,7 +19,8 @@ internal class BoardFactory {
                 }
                 putPieceAndPawnForBothSides(j, pieceType)
             }
-        }
+        },
+        pawnPromotionCallback
     )
 
     private fun MutableMap<Indexes, Piece>.putPieceAndPawnForBothSides(

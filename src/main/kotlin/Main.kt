@@ -1,11 +1,13 @@
 import core.Chess
+import core.board.PawnPromotionCallback
+import core.board.PawnPromotionType
 import core.command.CommandResult
 import core.util.ChessError
 import java.io.File
 
 private const val IS_DEBUG = false
 
-private val chess = Chess()
+private val chess = Chess(PawnPromotionCallbackImpl())
 private val boardUi = chess.boardUi
 private val boardText = BoardText(chess.board, boardUi)
 private val inputCommands = File("src/main/resources", "input_commands.txt").readLines()
@@ -72,5 +74,46 @@ private fun processMove(): CommandResult {
         if (IS_DEBUG) it.printStackTrace()
     }.getOrElse {
         processMove()
+    }
+}
+
+private class PawnPromotionCallbackImpl : PawnPromotionCallback {
+
+    companion object {
+        private const val ORDINAL_TO_INPUT_DIFFERENCE = 1
+    }
+
+    private val promotionTypeMessage = PawnPromotionType.values()
+        .joinToString(separator = "\n") { pawnPromotionType ->
+            val pieceName = when (pawnPromotionType) {
+                PawnPromotionType.BISHOP -> "Слон"
+                PawnPromotionType.KNIGHT -> "Конь"
+                PawnPromotionType.ROOK -> "Ладья"
+                PawnPromotionType.QUEEN -> "Ферзь"
+            }
+            val ordinal = pawnPromotionType.toInputNumber()
+            "$ordinal - $pieceName"
+        }
+
+
+    override fun getPawnPromotionType(): PawnPromotionType {
+        println("На какую фигуру заменить?\n${promotionTypeMessage}")
+        var pawnPromotionType: PawnPromotionType? = null
+        while (pawnPromotionType == null) {
+            pawnPromotionType = runCatching {
+                readLine()!!.trim().toInt().toPawnPromotionType()
+            }.onFailure {
+                println("Ошибка, повторите ввод")
+            }.getOrNull()
+        }
+        return pawnPromotionType
+    }
+
+    private fun PawnPromotionType.toInputNumber(): String {
+        return (this.ordinal + ORDINAL_TO_INPUT_DIFFERENCE).toString()
+    }
+
+    private fun Int.toPawnPromotionType(): PawnPromotionType {
+        return PawnPromotionType.values()[this - ORDINAL_TO_INPUT_DIFFERENCE]
     }
 }
