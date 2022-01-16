@@ -4,16 +4,9 @@ import core.board.PawnPromotionCallback
 import core.command.CommandResult
 import core.di.Deps
 
-//todo тесты на всю логику
-// модуль зависимостей
-// объявить ничью
+//todo
+// тесты на всю логику
 // пат
-// сдаться
-// ход назад
-// таймер
-// король может атаковать короля противника лишь при помощи «вскрытого» шаха
-// ПРОЧИТАТЬ ПРО ВСЕ КОРНЕРКЕЙСЫ, КОТОРЫХ ПРОСТО, СУКА, МИЛЛИОН
-// параллельные вычисления для сложных операций
 class Chess(pawnPromotionCallback: PawnPromotionCallback) {
 
     private val deps = Deps(pawnPromotionCallback)

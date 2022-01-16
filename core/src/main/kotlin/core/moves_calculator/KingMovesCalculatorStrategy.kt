@@ -2,22 +2,24 @@ package core.moves_calculator
 
 import core.board.Board
 import core.piece.Piece
+import core.piece.PieceType
 import core.util.Indexes
+import core.util.i
+import core.util.isInBounds
 import core.util.j
 
 internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetector) : MovesCalculatorStrategy() {
 
     override fun calculateMoves(piece: Piece, i: Int, j: Int, moves: MutableSet<Indexes>, board: Board) {
-        val iVariants = listOf(i - 1, i, i + 1)
-        val jVariants = listOf(j - 1, j, j + 1)
+        val from = i to j
 
-        for (iVariant in iVariants) {
-            for (jVariant in jVariants) {
-                if (iVariant == i && jVariant == j) continue
-                val move = iVariant to jVariant
-                if (canMoveOrCapture(move, board)) {
-                    moves.add(move)
-                }
+        doForEveryPositionAroundKing(i, j) {
+            val hasEnemyKingAroundAfterMove = hasEnemyKingAroundAfterMove(from, it, board)
+            // There is no enemy King around after the move, or there is, but also there is a discovered check.
+            val canAttackEnemyKing = !hasEnemyKingAroundAfterMove ||
+                    checkDetector.isCheckAfterMove(from, it, board, toggleMove = true)
+            if (it.isInBounds && (canCapture(it, board) || (board.isCellEmpty(it) && canAttackEnemyKing))) {
+                moves.add(it)
             }
         }
 
@@ -56,6 +58,18 @@ internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetec
         // condition #6 is fulfilled when check moves are filtered in MovesCalculator
     }
 
+    private fun hasEnemyKingAroundAfterMove(from: Indexes, to: Indexes, board: Board): Boolean {
+        val copiedBoard = board.copy().apply {
+            move(from, to)
+        }
+        doForEveryPositionAroundKing(to.i, to.j) {
+            if (copiedBoard.isEnemy(it) && copiedBoard[it]?.type == PieceType.KING) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun areAllFieldsBetweenKingAndRookEmpty(i: Int, j: Int, board: Board, isLeft: Boolean): Boolean {
         val distanceToRook = if (isLeft) {
             Board.DISTANCE_FROM_KING_TO_LEFT_ROOK
@@ -65,6 +79,18 @@ internal class KingMovesCalculatorStrategy(private val checkDetector: CheckDetec
         return (1..distanceToRook).all { nextJ ->
             val position = i to (j + if (isLeft) -nextJ else nextJ)
             board.isCellEmpty(position)
+        }
+    }
+
+    private inline fun doForEveryPositionAroundKing(i: Int, j: Int, action: (position: Indexes) -> Unit) {
+        val iVariants = listOf(i - 1, i, i + 1)
+        val jVariants = listOf(j - 1, j, j + 1)
+
+        for (iVariant in iVariants) {
+            for (jVariant in jVariants) {
+                if (iVariant == i && jVariant == j) continue
+                action(iVariant to jVariant)
+            }
         }
     }
 }

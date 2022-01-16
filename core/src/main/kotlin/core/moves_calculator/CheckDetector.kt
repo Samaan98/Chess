@@ -53,11 +53,12 @@ internal class CheckDetector(
         return false
     }
 
-    fun isCheckAfterMove(from: Indexes, to: Indexes, board: Board): Boolean {
-        return board.copy().apply { // copy the board
-            move(from, to) // move the piece on the copied board
+    fun isCheckAfterMove(from: Indexes, to: Indexes, board: Board, toggleMove: Boolean = false): Boolean {
+        return board.copy().apply {
+            move(from, to)
+            if (toggleMove) toggleMove()
         }.let { modifiedCopiedBoard ->
-            isCheck(board = modifiedCopiedBoard) // check if this move leads to check
+            isCheck(board = modifiedCopiedBoard)
         }
     }
 

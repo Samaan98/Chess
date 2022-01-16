@@ -2,6 +2,7 @@ package core.moves_calculator
 
 import core.board.Board
 import core.piece.Piece
+import core.piece.PieceType
 import core.util.Indexes
 import core.util.i
 import core.util.isInBounds
@@ -31,17 +32,17 @@ internal abstract class MovesCalculatorStrategy {
      * @return can move further after this move.
      */
     protected fun addMoveIfCanMoveAndCanMoveFurther(
-        nextPosition: Indexes,
+        position: Indexes,
         moves: MutableSet<Indexes>,
         board: Board
     ): Boolean {
-        return if (canMoveOrCapture(nextPosition, board)) {
-            moves.add(nextPosition)
-            !board.isEnemy(nextPosition)
+        return if (position.isInBounds && (board.isCellEmpty(position) || canCapture(position, board))) {
+            moves.add(position)
+            !board.isEnemy(position)
         } else false
     }
 
-    protected fun canMoveOrCapture(position: Indexes, board: Board): Boolean {
-        return position.isInBounds && (board.isCellEmpty(position) || board.isEnemy(position))
+    protected fun canCapture(position: Indexes, board: Board): Boolean {
+        return board.isEnemy(position) && board[position]?.type != PieceType.KING
     }
 }
