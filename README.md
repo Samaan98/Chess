@@ -9,6 +9,7 @@ A project with all the Chess game logic implemented.
 * Castling
 * Check detection
 * Checkmate detection
+* Pawn promotion
 
 ## Modules
 
