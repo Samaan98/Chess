@@ -2,6 +2,7 @@ package core
 
 import core.board.PawnPromotionCallback
 import core.command.CommandResult
+import core.command.InputProcessor
 import core.di.Deps
 
 //todo
@@ -14,6 +15,9 @@ class Chess(pawnPromotionCallback: PawnPromotionCallback) {
     val board by deps::board
     val boardUi by deps::boardUi
 
+    /**
+     * @see InputProcessor for available commands.
+     */
     fun processInputCommand(input: String): CommandResult {
         val command = deps.inputProcessor.parse(input)
         return deps.commandProcessor.process(command)
